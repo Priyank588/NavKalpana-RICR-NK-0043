@@ -1,50 +1,74 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export const LoginPage = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
   const { login, loading } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    const loadingToast = toast.loading('Logging in...');
     try {
       await login(email, password);
+      toast.success('Welcome back! 🎉', { id: loadingToast });
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.error || 'Login failed');
+      toast.error(err.response?.data?.error || 'Login failed', { id: loadingToast });
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-500 to-purple-600">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-96">
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">FitAI Login</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-20 left-10 text-6xl animate-float opacity-10">💪</div>
+        <div className="absolute bottom-20 right-10 text-6xl animate-float opacity-10" style={{animationDelay: '1s'}}>🏃</div>
+        <div className="absolute top-40 right-20 text-6xl animate-float opacity-10" style={{animationDelay: '2s'}}>🥗</div>
+        <div className="absolute bottom-40 left-20 text-6xl animate-float opacity-10" style={{animationDelay: '1.5s'}}>🎯</div>
+      </div>
+      
+      {/* Gradient Orbs */}
+      <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-sky-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse" style={{animationDelay: '2s'}}></div>
+      
+      <div className="glass-card p-10 w-full max-w-md animate-scale-in relative z-10 border border-cyan-500/20">
+        <div className="text-center mb-8">
+          <div className="text-7xl mb-4 animate-bounce-subtle">🔐</div>
+          <h1 className="text-5xl font-bold gradient-text mb-3">Welcome Back!</h1>
+          <p className="text-gray-400 text-lg">Login to continue your fitness journey</p>
+        </div>
         
-        {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
-        
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          <div className="animate-slide-up">
+            <label className="block text-gray-300 text-sm font-bold mb-2 flex items-center gap-2">
+              <span className="text-cyan-400">📧</span>
+              Email Address
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+              placeholder="your@email.com"
               required
             />
           </div>
           
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
+          <div className="animate-slide-up" style={{animationDelay: '0.1s'}}>
+            <label className="block text-gray-300 text-sm font-bold mb-2 flex items-center gap-2">
+              <span className="text-cyan-400">🔒</span>
+              Password
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+              placeholder="••••••••"
               required
             />
           </div>
@@ -52,15 +76,38 @@ export const LoginPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-md disabled:opacity-50"
+            className="w-full group relative px-6 py-4 bg-gradient-to-r from-cyan-500 to-sky-500 text-white font-bold rounded-xl shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden animate-slide-up"
+            style={{animationDelay: '0.2s'}}
           >
-            {loading ? 'Logging in...' : 'Login'}
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-sky-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="relative flex items-center justify-center gap-2 text-lg">
+              {loading ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  <span>Logging in...</span>
+                </>
+              ) : (
+                <>
+                  <span>🚀</span>
+                  <span>Login</span>
+                </>
+              )}
+            </span>
           </button>
         </form>
         
-        <p className="text-center text-gray-600 text-sm mt-4">
-          Don't have an account? <a href="/register" className="text-blue-500 hover:underline">Register here</a>
-        </p>
+        <div className="mt-8 text-center animate-fade-in">
+          <p className="text-gray-400 text-sm">
+            Don't have an account?{' '}
+            <a href="/register" className="text-cyan-400 hover:text-cyan-300 font-bold hover:underline transition-colors">
+              Register here
+            </a>
+          </p>
+        </div>
+        
+        {/* Decorative Elements */}
+        <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-cyan-500 to-sky-500 rounded-full opacity-20 blur-2xl"></div>
+        <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-full opacity-20 blur-2xl"></div>
       </div>
     </div>
   );

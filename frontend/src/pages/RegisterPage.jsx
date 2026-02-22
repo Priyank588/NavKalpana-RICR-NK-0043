@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 export const RegisterPage = () => {
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  const [error, setError] = useState('');
   const { register, loading } = useAuth();
   const navigate = useNavigate();
 
@@ -15,66 +15,98 @@ export const RegisterPage = () => {
     e.preventDefault();
     
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      toast.error('Passwords do not match');
       return;
     }
     
+    const loadingToast = toast.loading('Creating your account...');
     try {
       await register(name, email, password);
+      toast.success('Account created! Let\'s set up your profile 🎉', { id: loadingToast });
       navigate('/profile-setup');
     } catch (err) {
-      setError(err.response?.data?.error || 'Registration failed');
+      toast.error(err.response?.data?.error || 'Registration failed', { id: loadingToast });
     }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-green-500 to-blue-600">
-      <div className="bg-white p-8 rounded-lg shadow-xl w-96">
-        <h1 className="text-3xl font-bold text-center mb-8 text-gray-800">Join FitAI</h1>
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-emerald-900 to-slate-800 relative overflow-hidden">
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <div className="absolute top-10 right-10 text-6xl animate-float opacity-10">🎯</div>
+        <div className="absolute bottom-10 left-10 text-6xl animate-float opacity-10" style={{animationDelay: '1.5s'}}>⚡</div>
+        <div className="absolute top-1/2 left-20 text-6xl animate-float opacity-10" style={{animationDelay: '0.5s'}}>🌟</div>
+        <div className="absolute bottom-1/3 right-20 text-6xl animate-float opacity-10" style={{animationDelay: '2s'}}>💪</div>
+      </div>
+      
+      {/* Gradient Orbs */}
+      <div className="absolute top-0 right-0 w-96 h-96 bg-emerald-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
+      <div className="absolute bottom-0 left-0 w-96 h-96 bg-green-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse" style={{animationDelay: '2s'}}></div>
+      
+      <div className="glass-card p-10 w-full max-w-md animate-scale-in relative z-10 border border-emerald-500/20">
+        <div className="text-center mb-8">
+          <div className="text-7xl mb-4 animate-bounce-subtle">🚀</div>
+          <h1 className="text-5xl font-bold gradient-text mb-3">Join FitAI</h1>
+          <p className="text-gray-400 text-lg">Start your transformation today</p>
+        </div>
         
-        {error && <div className="bg-red-100 text-red-700 p-3 rounded mb-4">{error}</div>}
-        
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Name</label>
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div className="animate-slide-up">
+            <label className="block text-gray-300 text-sm font-bold mb-2 flex items-center gap-2">
+              <span className="text-emerald-400">👤</span>
+              Full Name
+            </label>
             <input
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
+              placeholder="Your name"
               required
             />
           </div>
           
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Email</label>
+          <div className="animate-slide-up" style={{animationDelay: '0.1s'}}>
+            <label className="block text-gray-300 text-sm font-bold mb-2 flex items-center gap-2">
+              <span className="text-emerald-400">📧</span>
+              Email Address
+            </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
+              placeholder="your@email.com"
               required
             />
           </div>
           
-          <div className="mb-4">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Password</label>
+          <div className="animate-slide-up" style={{animationDelay: '0.2s'}}>
+            <label className="block text-gray-300 text-sm font-bold mb-2 flex items-center gap-2">
+              <span className="text-emerald-400">🔒</span>
+              Password
+            </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
+              placeholder="••••••••"
               required
             />
           </div>
           
-          <div className="mb-6">
-            <label className="block text-gray-700 text-sm font-bold mb-2">Confirm Password</label>
+          <div className="animate-slide-up" style={{animationDelay: '0.3s'}}>
+            <label className="block text-gray-300 text-sm font-bold mb-2 flex items-center gap-2">
+              <span className="text-emerald-400">✅</span>
+              Confirm Password
+            </label>
             <input
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-green-500"
+              className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
+              placeholder="••••••••"
               required
             />
           </div>
@@ -82,15 +114,38 @@ export const RegisterPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-2 px-4 rounded-md disabled:opacity-50"
+            className="w-full group relative px-6 py-4 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-bold rounded-xl shadow-lg hover:shadow-emerald-500/50 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden animate-slide-up"
+            style={{animationDelay: '0.4s'}}
           >
-            {loading ? 'Registering...' : 'Register'}
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-green-500 to-emerald-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="relative flex items-center justify-center gap-2 text-lg">
+              {loading ? (
+                <>
+                  <span className="animate-spin">⏳</span>
+                  <span>Creating Account...</span>
+                </>
+              ) : (
+                <>
+                  <span>✨</span>
+                  <span>Create Account</span>
+                </>
+              )}
+            </span>
           </button>
         </form>
         
-        <p className="text-center text-gray-600 text-sm mt-4">
-          Already have an account? <a href="/login" className="text-green-500 hover:underline">Login here</a>
-        </p>
+        <div className="mt-8 text-center animate-fade-in">
+          <p className="text-gray-400 text-sm">
+            Already have an account?{' '}
+            <a href="/login" className="text-emerald-400 hover:text-emerald-300 font-bold hover:underline transition-colors">
+              Login here
+            </a>
+          </p>
+        </div>
+        
+        {/* Decorative Elements */}
+        <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-emerald-500 to-green-500 rounded-full opacity-20 blur-2xl"></div>
+        <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full opacity-20 blur-2xl"></div>
       </div>
     </div>
   );

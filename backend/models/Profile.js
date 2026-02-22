@@ -13,9 +13,9 @@ const profileSchema = new mongoose.Schema({
     min: 13,
     max: 120
   },
-  biological_sex: {
+  gender: {
     type: String,
-    enum: ['Male', 'Female'],
+    enum: ['Male', 'Female', 'Other'],
     required: true
   },
   height_cm: {
@@ -51,6 +51,29 @@ const profileSchema = new mongoose.Schema({
     min: 30,
     max: 500
   },
+  available_days_per_week: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 7,
+    default: 4
+  },
+  // NEW: User preferences and limitations
+  dietary_preferences: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  allergies: {
+    type: String,
+    default: '',
+    trim: true
+  },
+  injuries_limitations: {
+    type: String,
+    default: '',
+    trim: true
+  },
   // Calculated fields
   bmi: Number,
   bmr: Number,
@@ -65,6 +88,12 @@ const profileSchema = new mongoose.Schema({
     type: Date,
     default: Date.now
   }
+});
+
+// Update timestamp on save
+profileSchema.pre('save', function(next) {
+  this.updated_at = Date.now();
+  next();
 });
 
 export default mongoose.model('Profile', profileSchema);

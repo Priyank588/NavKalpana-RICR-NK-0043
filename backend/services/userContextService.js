@@ -5,6 +5,7 @@ import WorkoutPlan from '../models/WorkoutPlanV2.js';
 import DietPlan from '../models/DietPlan.js';
 import EnergyLog from '../models/EnergyLog.js';
 import BodyMeasurement from '../models/BodyMeasurement.js';
+import User from '../models/User.js';
 
 /**
  * Gather complete user context for AI training
@@ -14,6 +15,7 @@ export const gatherCompleteUserContext = async (user_id) => {
   try {
     // Get all user data in parallel
     const [
+      user,
       profile,
       allProgress,
       allHabitScores,
@@ -22,6 +24,7 @@ export const gatherCompleteUserContext = async (user_id) => {
       allEnergyLogs,
       allMeasurements
     ] = await Promise.all([
+      User.findById(user_id),
       Profile.findOne({ user_id }),
       ProgressLog.find({ user_id }).sort({ week_number: 1 }),
       HabitScore.find({ user_id }).sort({ week_number: 1 }),
@@ -31,7 +34,7 @@ export const gatherCompleteUserContext = async (user_id) => {
       BodyMeasurement.find({ user_id }).sort({ measured_at: -1 }).limit(10)
     ]);
 
-    if (!profile) {
+    if (!profile || !user) {
       return null;
     }
 
@@ -40,6 +43,12 @@ export const gatherCompleteUserContext = async (user_id) => {
     
     // Build comprehensive context
     const context = {
+      // User Info
+      user: {
+        name: user.name,
+        email: user.email
+      },
+
       // Basic Profile
       profile: {
         age: profile.age,
@@ -207,6 +216,10 @@ export const formatUserContextForAI = (context) => {
   }
 
   let prompt = `COMPLETE USER PROFILE AND HISTORY:
+
+=== USER INFORMATION ===
+- Name: ${context.user.name}
+- Email: ${context.user.email}
 
 === BASIC INFORMATION ===
 - Age: ${context.profile.age} years old

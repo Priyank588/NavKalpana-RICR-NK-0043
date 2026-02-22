@@ -46,7 +46,7 @@ export const DashboardPage = () => {
   }, []);
 
   if (loading) return (
-    <div className="page-container bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
+    <div className="page-container bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
       <div className="text-center">
         <div className="text-7xl mb-4 animate-bounce-subtle">⏳</div>
         <p className="text-2xl font-bold text-gray-800">Loading...</p>
@@ -55,25 +55,33 @@ export const DashboardPage = () => {
   );
 
   return (
-    <div className="page-container bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50">
+    <div className="page-container bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8 animate-slide-down">
           <div>
             <h1 className="text-5xl font-bold gradient-text mb-2">Dashboard</h1>
-            <p className="text-gray-600">Welcome back! Here's your fitness overview</p>
+            <p className="text-gray-400">Welcome back! Here's your fitness overview</p>
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => navigate('/profile')}
-              className="btn-primary"
+              className="group relative px-6 py-3 bg-gradient-to-r from-cyan-500 to-sky-500 text-white font-bold rounded-xl shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 overflow-hidden"
             >
-              ✏️ Edit Profile
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-sky-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              <span className="relative flex items-center gap-2">
+                <span className="text-xl">✏️</span>
+                <span>Edit Profile</span>
+              </span>
             </button>
             <button
               onClick={handleLogout}
-              className="btn-danger"
+              className="group relative px-6 py-3 bg-gradient-to-r from-red-500 to-rose-500 text-white font-bold rounded-xl shadow-lg hover:shadow-red-500/50 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 overflow-hidden"
             >
-              🚪 Logout
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-rose-500 to-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              <span className="relative flex items-center gap-2">
+                <span className="text-xl">🚪</span>
+                <span>Logout</span>
+              </span>
             </button>
           </div>
         </div>
@@ -139,15 +147,15 @@ export const DashboardPage = () => {
       
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           {/* Habit Score Card */}
-          <div className="stat-card bg-gradient-to-br from-blue-500 to-blue-600 text-white animate-slide-up">
+          <div className="stat-card bg-gradient-to-br from-cyan-500 to-sky-600 text-white animate-slide-up">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">Habit Score</h3>
               <span className="text-4xl">🎯</span>
             </div>
             <div className="text-6xl font-bold mb-2">{habitScore?.habit_score || 0}</div>
             <div className="text-blue-100 text-lg">out of 100</div>
-            <div className="mt-4 pt-4 border-t border-blue-400">
-              <p className="text-blue-100">🔥 Streak: <span className="font-bold text-white">{habitScore?.streak_count || 0} weeks</span></p>
+            <div className="mt-4 pt-4 border-t border-cyan-400">
+              <p className="text-cyan-100">🔥 Streak: <span className="font-bold text-white">{habitScore?.streak_count || 0} weeks</span></p>
             </div>
           </div>
           
@@ -173,15 +181,15 @@ export const DashboardPage = () => {
           </div>
           
           {/* Upcoming Workout Card */}
-          <div className="stat-card bg-gradient-to-br from-purple-500 to-pink-500 text-white animate-slide-up" style={{animationDelay: '0.2s'}}>
+          <div className="stat-card bg-gradient-to-br from-orange-500 to-amber-500 text-white animate-slide-up" style={{animationDelay: '0.2s'}}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">This Week's Focus</h3>
               <span className="text-4xl">💪</span>
             </div>
             <p className="text-2xl font-bold mb-2">{workout?.workouts?.[0]?.type || 'Full Body'}</p>
-            <div className="text-purple-100">Week {workout?.week_number || 1}</div>
-            <div className="mt-4 pt-4 border-t border-purple-400">
-              <p className="text-purple-100">Ready to crush it!</p>
+            <div className="text-orange-100">Week {workout?.week_number || 1}</div>
+            <div className="mt-4 pt-4 border-t border-orange-400">
+              <p className="text-orange-100">Ready to crush it!</p>
             </div>
           </div>
         </div>

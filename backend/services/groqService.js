@@ -18,6 +18,47 @@ const isAIAvailable = () => {
   return process.env.GROQ_API_KEY && process.env.GROQ_API_KEY !== 'your_groq_api_key_here';
 };
 
+/**
+ * Extract and parse JSON from AI response
+ * Handles common issues like markdown code blocks, trailing commas, etc.
+ */
+const extractAndParseJSON = (text) => {
+  // Remove markdown code blocks
+  let cleanText = text.trim();
+  cleanText = cleanText.replace(/```json\n?/gi, '').replace(/```\n?/g, '');
+  cleanText = cleanText.trim();
+  
+  // Extract JSON object (find first { to last })
+  const firstBrace = cleanText.indexOf('{');
+  const lastBrace = cleanText.lastIndexOf('}');
+  
+  if (firstBrace === -1 || lastBrace === -1) {
+    throw new Error('No JSON object found in response');
+  }
+  
+  cleanText = cleanText.substring(firstBrace, lastBrace + 1);
+  
+  // Try to parse
+  try {
+    return JSON.parse(cleanText);
+  } catch (error) {
+    // Try to fix common JSON errors
+    // Remove trailing commas before } or ]
+    cleanText = cleanText.replace(/,(\s*[}\]])/g, '$1');
+    
+    // Try parsing again
+    try {
+      return JSON.parse(cleanText);
+    } catch (secondError) {
+      // Log the problematic JSON for debugging
+      console.error('Failed to parse JSON after cleanup:');
+      console.error('Error:', secondError.message);
+      console.error('JSON (first 1000 chars):', cleanText.substring(0, 1000));
+      throw new Error('Invalid JSON in AI response');
+    }
+  }
+};
+
 // Generate AI-powered workout plan with COMPLETE user context
 export const generateAIWorkoutPlan = async (user_id, weekNumber) => {
   // Gather ALL user data
@@ -39,7 +80,7 @@ ANALYZE THE USER'S DATA:
 3. Review their fatigue levels - do they need more recovery?
 4. Consider their goal and current progress toward it
 5. Account for their experience level and training days per week: ${userContext.profile.training_days_per_week || userContext.profile.available_days_per_week || 4} days
-6. CRITICAL: Check INJURIES/LIMITATIONS - AVOID exercises that could aggravate: ${userContext.profile.injuries_limitations && userContext.profile.injuries_limitations.length > 0 ? userContext.profile.injuries_limitations.join(', ') : 'None'}
+6. CRITICAL: Check INJURIES/LIMITATIONS - AVOID exercises that could aggravate: ${userContext.profile.injuries_limitations || 'None'}
 7. IMPORTANT: Check their GOAL TIMELINE - they need to reach their target in ${userContext.timeline ? userContext.timeline.timeline.optimal_weeks + ' weeks' : 'their planned timeframe'}
 8. Adjust workout intensity to match their timeline - if behind schedule, increase intensity; if ahead, maintain current pace
 
@@ -142,24 +183,22 @@ IMPORTANT:
           content: prompt
         }
       ],
-      model: "llama-3.1-8b-instant", // Switched for separate rate limit quota
+      model: "llama-3.3-70b-versatile", // Best model for complex reasoning and detailed workout plans
       temperature: 0.7,
-      max_tokens: 1500, // Reduced to save tokens
+      max_tokens: 2000, // Increased for better quality
     });
 
     const text = completion.choices[0]?.message?.content || '';
     
-    // Clean up the response
-    let cleanText = text.trim();
-    cleanText = cleanText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    cleanText = cleanText.trim();
-    
-    const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      cleanText = jsonMatch[0];
+    // Clean up and extract JSON
+    try {
+      const parsedData = extractAndParseJSON(text);
+      return parsedData;
+    } catch (parseError) {
+      console.error('JSON Parse Error:', parseError.message);
+      console.error('Raw response (first 500 chars):', text.substring(0, 500));
+      throw new Error('Failed to generate AI workout plan');
     }
-    
-    return JSON.parse(cleanText);
   } catch (error) {
     console.error('Groq API Error:', error);
     throw new Error('Failed to generate AI workout plan');
@@ -184,8 +223,8 @@ ANALYZE THE USER'S DATA:
 1. Look at their weight progress - is their calorie target working?
 2. Check their diet adherence - do they need simpler meals?
 3. Review their energy levels - do they need more carbs or different timing?
-4. CRITICAL: Dietary Preference - ${userContext.profile.dietary_preference || 'Both'} - ONLY include foods matching this preference
-5. CRITICAL: Food Allergies - COMPLETELY AVOID: ${userContext.profile.allergies && userContext.profile.allergies.length > 0 ? userContext.profile.allergies.join(', ') : 'None'}
+4. CRITICAL: Dietary Preference - ${userContext.profile.dietary_preferences || 'No restrictions'} - ONLY include foods matching this preference
+5. CRITICAL: Food Allergies - COMPLETELY AVOID: ${userContext.profile.allergies || 'None'}
 6. Account for their goal and progress toward it
 7. IMPORTANT: Check their GOAL TIMELINE - they need to reach ${userContext.profile.target_weight_kg}kg in ${userContext.timeline ? userContext.timeline.timeline.optimal_weeks + ' weeks' : 'their planned timeframe'}
 8. Adjust calorie target if they're behind or ahead of schedule based on their actual weekly rate
@@ -238,23 +277,22 @@ IMPORTANT:
           content: prompt
         }
       ],
-      model: "llama-3.1-8b-instant", // Switched for separate rate limit quota
+      model: "llama-3.3-70b-versatile", // Best model for complex reasoning and reliable JSON
       temperature: 0.7,
-      max_tokens: 1500, // Reduced to save tokens
+      max_tokens: 1500, // Reduced to save tokens while maintaining quality
     });
 
     const text = completion.choices[0]?.message?.content || '';
     
-    let cleanText = text.trim();
-    cleanText = cleanText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    cleanText = cleanText.trim();
-    
-    const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      cleanText = jsonMatch[0];
+    // Clean up and extract JSON
+    try {
+      const parsedData = extractAndParseJSON(text);
+      return parsedData;
+    } catch (parseError) {
+      console.error('JSON Parse Error:', parseError.message);
+      console.error('Raw response (first 500 chars):', text.substring(0, 500));
+      throw new Error('Failed to generate AI diet plan');
     }
-    
-    return JSON.parse(cleanText);
   } catch (error) {
     console.error('Groq API Error:', error);
     throw new Error('Failed to generate AI diet plan');
@@ -349,27 +387,20 @@ IMPORTANT:
           content: prompt
         }
       ],
-      model: "llama-3.1-8b-instant", // Switched for separate rate limit quota
+      model: "llama-3.1-8b-instant", // Use smaller model for chatbot to save tokens
       temperature: 0.8,
-      max_tokens: 700, // Reduced to save tokens
+      max_tokens: 800, // Reduced to save tokens
     });
 
     const text = completion.choices[0]?.message?.content || '';
     
-    let cleanText = text.trim();
-    cleanText = cleanText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
-    cleanText = cleanText.trim();
-    
-    const jsonMatch = cleanText.match(/\{[\s\S]*\}/);
-    if (jsonMatch) {
-      cleanText = jsonMatch[0];
-    }
-    
+    // Clean up and extract JSON
     try {
-      return JSON.parse(cleanText);
+      const parsedData = extractAndParseJSON(text);
+      return parsedData;
     } catch (parseError) {
       console.error('JSON Parse Error:', parseError.message);
-      console.error('Raw text:', text.substring(0, 300));
+      console.error('Raw response (first 500 chars):', text.substring(0, 500));
       throw new Error('Failed to parse AI response as JSON');
     }
   } catch (error) {

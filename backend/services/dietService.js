@@ -33,15 +33,21 @@ export const generateDietPlanForUser = async (user_id, week_number = 1) => {
       adjustmentNotes = aiPlan.adjustment_notes;
     } catch (error) {
       console.error('Groq AI generation failed, falling back to template:', error.message);
-      // Fallback to template-based generation
-      meals = generateDietPlan(profile.daily_calorie_target, profile.goal, macros);
+      // Fallback to template-based generation with dietary filtering
+      meals = generateDietPlan(profile.daily_calorie_target, profile.goal, macros, profile.allergies, profile.dietary_preferences);
       weekSummary = `Week ${week_number} - ${profile.goal} Nutrition Plan`;
+      if (profile.allergies || profile.dietary_preferences) {
+        weekSummary += ` (${profile.dietary_preferences || 'Custom'} - Allergen-free)`;
+      }
     }
   } else {
     console.log('Using template-based diet generation (Groq AI not configured)');
-    // Use template-based generation
-    meals = generateDietPlan(profile.daily_calorie_target, profile.goal, macros);
+    // Use template-based generation with dietary filtering
+    meals = generateDietPlan(profile.daily_calorie_target, profile.goal, macros, profile.allergies, profile.dietary_preferences);
     weekSummary = `Week ${week_number} - ${profile.goal} Nutrition Plan`;
+    if (profile.allergies || profile.dietary_preferences) {
+      weekSummary += ` (${profile.dietary_preferences || 'Custom'} - Allergen-free)`;
+    }
   }
   
   // Create diet plan document

@@ -84,7 +84,70 @@ export const advancedWorkoutTemplate = {
   }
 };
 
-export const generateWeeklyWorkout = (goal, experienceLevel, fatigueStatus) => {
+// Apply intensity multiplier to exercises
+const applyIntensityMultiplier = (exercises, multiplier) => {
+  return exercises.map(exercise => {
+    const adjustedExercise = { ...exercise };
+    
+    // Adjust sets based on multiplier
+    if (multiplier < 1.0) {
+      adjustedExercise.sets = Math.max(2, Math.floor(exercise.sets * multiplier));
+      adjustedExercise.guidance += ' | Reduced volume for recovery';
+    } else if (multiplier > 1.0) {
+      adjustedExercise.sets = Math.min(5, Math.ceil(exercise.sets * multiplier));
+      adjustedExercise.guidance += ' | Increased volume for active lifestyle';
+    }
+    
+    return adjustedExercise;
+  });
+};
+
+// Filter exercises based on injuries
+const filterExercisesByInjuries = (exercises, injuries) => {
+  if (!injuries || injuries.trim() === '') return exercises;
+  
+  const injuryKeywords = injuries.toLowerCase().split(',').map(i => i.trim());
+  const injuryExerciseMap = {
+    'knee': ['squats', 'leg press', 'lunges', 'leg extension'],
+    'back': ['deadlifts', 'rows', 'squats'],
+    'shoulder': ['overhead press', 'lateral raises', 'bench press'],
+    'elbow': ['curls', 'tricep', 'overhead press'],
+    'wrist': ['curls', 'wrist', 'push-ups'],
+    'ankle': ['running', 'jumping', 'calf raises'],
+    'hip': ['squats', 'deadlifts', 'leg press']
+  };
+  
+  return exercises.filter(exercise => {
+    const exerciseName = exercise.name.toLowerCase();
+    
+    // Check if exercise should be avoided based on injuries
+    for (const injury of injuryKeywords) {
+      const avoidExercises = injuryExerciseMap[injury] || [];
+      for (const avoid of avoidExercises) {
+        if (exerciseName.includes(avoid)) {
+          return false; // Exclude this exercise
+        }
+      }
+    }
+    
+    return true; // Include this exercise
+  });
+};
+
+// Get safe alternative exercises
+const getSafeAlternatives = (originalExercise, injuries) => {
+  const alternatives = {
+    'Squats': { name: 'Leg Press', sets: 3, reps: '10-12', rest_seconds: 90, guidance: 'Safer for knee/back issues', intensity_level: 'Moderate' },
+    'Deadlifts': { name: 'Romanian Deadlifts', sets: 3, reps: '8-10', rest_seconds: 120, guidance: 'Less stress on lower back', intensity_level: 'Moderate' },
+    'Overhead Press': { name: 'Dumbbell Shoulder Press', sets: 3, reps: '8-10', rest_seconds: 90, guidance: 'Better shoulder control', intensity_level: 'Moderate' },
+    'Bench Press': { name: 'Dumbbell Bench Press', sets: 3, reps: '8-10', rest_seconds: 90, guidance: 'More shoulder-friendly', intensity_level: 'Moderate' },
+    'Barbell Rows': { name: 'Cable Rows', sets: 3, reps: '10-12', rest_seconds: 60, guidance: 'Less back strain', intensity_level: 'Moderate' }
+  };
+  
+  return alternatives[originalExercise.name] || originalExercise;
+};
+
+export const generateWeeklyWorkout = (goal, experienceLevel, fatigueStatus, injuries = '', trainingDaysPerWeek = 4, activityLevel = 'Moderate') => {
   const week = [];
   
   let template;
@@ -101,37 +164,100 @@ export const generateWeeklyWorkout = (goal, experienceLevel, fatigueStatus) => {
     return generateRecoveryWeek();
   }
   
+  // Adjust intensity based on activity level
+  const intensityMultiplier = {
+    'Sedentary': 0.8,  // Reduce intensity for sedentary
+    'Light': 0.9,
+    'Moderate': 1.0,
+    'Active': 1.1      // Increase intensity for active
+  }[activityLevel] || 1.0;
+  
   // Adapt based on experience and goal
   if (experienceLevel === 'Beginner') {
-    week.push(
-      { day: 1, day_name: 'Monday', type: 'Full Body', exercises: template['Full Body 1'].exercises, rest_day: false },
-      { day: 2, day_name: 'Tuesday', type: 'Rest/Light Cardio', exercises: [], rest_day: true },
-      { day: 3, day_name: 'Wednesday', type: 'Full Body', exercises: template['Full Body 2'].exercises, rest_day: false },
-      { day: 4, day_name: 'Thursday', type: 'Rest/Light Cardio', exercises: [], rest_day: true },
-      { day: 5, day_name: 'Friday', type: 'Full Body', exercises: template['Full Body 3'].exercises, rest_day: false },
-      { day: 6, day_name: 'Saturday', type: 'Light Cardio', exercises: [], rest_day: true },
-      { day: 7, day_name: 'Sunday', type: 'Complete Rest', exercises: [], rest_day: true }
-    );
+    // Beginners: 3-4 days per week
+    const daysToInclude = Math.min(trainingDaysPerWeek, 4);
+    const workoutDays = [
+      { day: 1, day_name: 'Monday', type: 'Full Body', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Full Body 1'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 3, day_name: 'Wednesday', type: 'Full Body', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Full Body 2'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 5, day_name: 'Friday', type: 'Full Body', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Full Body 3'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 6, day_name: 'Saturday', type: 'Full Body', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Full Body 1'].exercises, injuries), intensityMultiplier), rest_day: false }
+    ];
+    
+    // Add training days based on frequency
+    for (let i = 0; i < daysToInclude; i++) {
+      week.push(workoutDays[i]);
+    }
+    
+    // Fill remaining days with rest
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const usedDays = week.map(d => d.day);
+    for (let i = 1; i <= 7; i++) {
+      if (!usedDays.includes(i)) {
+        week.push({ day: i, day_name: dayNames[i-1], type: 'Rest', exercises: [], rest_day: true });
+      }
+    }
+    week.sort((a, b) => a.day - b.day);
+    
   } else if (experienceLevel === 'Intermediate') {
-    week.push(
-      { day: 1, day_name: 'Monday', type: 'Push', exercises: template['Push'].exercises, rest_day: false },
-      { day: 2, day_name: 'Tuesday', type: 'Pull', exercises: template['Pull'].exercises, rest_day: false },
-      { day: 3, day_name: 'Wednesday', type: 'Leg', exercises: template['Leg'].exercises, rest_day: false },
-      { day: 4, day_name: 'Thursday', type: 'Rest/Light Cardio', exercises: [], rest_day: true },
-      { day: 5, day_name: 'Friday', type: 'Push', exercises: template['Push'].exercises, rest_day: false },
-      { day: 6, day_name: 'Saturday', type: 'Pull', exercises: template['Pull'].exercises, rest_day: false },
-      { day: 7, day_name: 'Sunday', type: 'Complete Rest', exercises: [], rest_day: true }
-    );
+    // Intermediate: 4-6 days per week (PPL split)
+    const daysToInclude = Math.min(trainingDaysPerWeek, 6);
+    const workoutDays = [
+      { day: 1, day_name: 'Monday', type: 'Push', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Push'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 2, day_name: 'Tuesday', type: 'Pull', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Pull'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 3, day_name: 'Wednesday', type: 'Leg', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Leg'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 5, day_name: 'Friday', type: 'Push', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Push'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 6, day_name: 'Saturday', type: 'Pull', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Pull'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 7, day_name: 'Sunday', type: 'Leg', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Leg'].exercises, injuries), intensityMultiplier), rest_day: false }
+    ];
+    
+    for (let i = 0; i < daysToInclude; i++) {
+      week.push(workoutDays[i]);
+    }
+    
+    // Fill remaining days with rest
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const usedDays = week.map(d => d.day);
+    for (let i = 1; i <= 7; i++) {
+      if (!usedDays.includes(i)) {
+        week.push({ day: i, day_name: dayNames[i-1], type: 'Rest', exercises: [], rest_day: true });
+      }
+    }
+    week.sort((a, b) => a.day - b.day);
+    
   } else {
-    week.push(
-      { day: 1, day_name: 'Monday', type: 'Heavy Compound', exercises: template['Heavy Compound'].exercises, rest_day: false },
-      { day: 2, day_name: 'Tuesday', type: 'Accessory', exercises: template['Accessory'].exercises, rest_day: false },
-      { day: 3, day_name: 'Wednesday', type: 'Volume', exercises: template['Volume'].exercises, rest_day: false },
-      { day: 4, day_name: 'Thursday', type: 'Heavy Compound', exercises: template['Heavy Compound'].exercises, rest_day: false },
-      { day: 5, day_name: 'Friday', type: 'Accessory', exercises: template['Accessory'].exercises, rest_day: false },
-      { day: 6, day_name: 'Saturday', type: 'Volume', exercises: template['Volume'].exercises, rest_day: false },
-      { day: 7, day_name: 'Sunday', type: 'Complete Rest', exercises: [], rest_day: true }
-    );
+    // Advanced: 5-6 days per week
+    const daysToInclude = Math.min(trainingDaysPerWeek, 6);
+    const workoutDays = [
+      { day: 1, day_name: 'Monday', type: 'Heavy Compound', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Heavy Compound'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 2, day_name: 'Tuesday', type: 'Accessory', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Accessory'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 3, day_name: 'Wednesday', type: 'Volume', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Volume'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 4, day_name: 'Thursday', type: 'Heavy Compound', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Heavy Compound'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 5, day_name: 'Friday', type: 'Accessory', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Accessory'].exercises, injuries), intensityMultiplier), rest_day: false },
+      { day: 6, day_name: 'Saturday', type: 'Volume', exercises: applyIntensityMultiplier(filterExercisesByInjuries(template['Volume'].exercises, injuries), intensityMultiplier), rest_day: false }
+    ];
+    
+    for (let i = 0; i < daysToInclude; i++) {
+      week.push(workoutDays[i]);
+    }
+    
+    // Fill remaining days with rest
+    const dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+    const usedDays = week.map(d => d.day);
+    for (let i = 1; i <= 7; i++) {
+      if (!usedDays.includes(i)) {
+        week.push({ day: i, day_name: dayNames[i-1], type: 'Rest', exercises: [], rest_day: true });
+      }
+    }
+    week.sort((a, b) => a.day - b.day);
+  }
+  
+  // Add injury note if exercises were filtered
+  if (injuries && injuries.trim() !== '') {
+    week.forEach(day => {
+      if (day.exercises.length > 0) {
+        day.injury_note = `⚠️ Exercises modified to accommodate: ${injuries}`;
+      }
+    });
   }
   
   return week;

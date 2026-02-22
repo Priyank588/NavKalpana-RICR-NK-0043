@@ -2,22 +2,39 @@ import * as profileService from '../services/profileService.js';
 
 export const createProfile = async (req, res) => {
   try {
-    const { age, biological_sex, height_cm, weight_kg, activity_level, experience_level, goal, target_weight_kg } = req.body;
+    const { 
+      age, 
+      gender, 
+      height_cm, 
+      weight_kg, 
+      activity_level, 
+      experience_level, 
+      goal, 
+      target_weight_kg,
+      available_days_per_week,
+      dietary_preferences,
+      allergies,
+      injuries_limitations
+    } = req.body;
     
     // Validate required fields
-    if (!age || !biological_sex || !height_cm || !weight_kg || !activity_level || !experience_level || !goal || !target_weight_kg) {
-      return res.status(400).json({ error: 'All profile fields are required' });
+    if (!age || !gender || !height_cm || !weight_kg || !activity_level || !experience_level || !goal || !target_weight_kg) {
+      return res.status(400).json({ error: 'All required profile fields must be provided' });
     }
     
     const profile = await profileService.createProfile(req.user_id, {
       age,
-      biological_sex,
+      gender,
       height_cm,
       weight_kg,
       activity_level,
       experience_level,
       goal,
-      target_weight_kg
+      target_weight_kg,
+      available_days_per_week: available_days_per_week || 4,
+      dietary_preferences: dietary_preferences || '',
+      allergies: allergies || '',
+      injuries_limitations: injuries_limitations || ''
     });
     
     res.status(201).json(profile);

@@ -5,14 +5,17 @@ export const calculateBMI = (weight_kg, height_cm) => {
 };
 
 // Calculate BMR using Mifflin-St Jeor equation
-export const calculateBMR = (weight_kg, height_cm, age, biological_sex) => {
+export const calculateBMR = (weight_kg, height_cm, age, gender) => {
   let bmr;
   
-  if (biological_sex === 'Male') {
+  // Handle both 'gender' and 'biological_sex' for backward compatibility
+  const sex = gender || 'Male';
+  
+  if (sex === 'Male') {
     // Men: (10 × weight) + (6.25 × height) − (5 × age) + 5
     bmr = (10 * weight_kg) + (6.25 * height_cm) - (5 * age) + 5;
   } else {
-    // Women: (10 × weight) + (6.25 × height) − (5 × age) − 161
+    // Women and Other: (10 × weight) + (6.25 × height) − (5 × age) − 161
     bmr = (10 * weight_kg) + (6.25 * height_cm) - (5 * age) - 161;
   }
   
@@ -31,9 +34,12 @@ export const getActivityFactor = (activity_level) => {
 };
 
 // Calculate daily calorie target based on goal
-export const calculateDailyCalorieTarget = (bmr, activity_factor, goal, biological_sex) => {
+export const calculateDailyCalorieTarget = (bmr, activity_factor, goal, gender) => {
   let tdee = bmr * activity_factor;
   let target;
+  
+  // Handle both 'gender' and 'biological_sex' for backward compatibility
+  const sex = gender || 'Male';
   
   if (goal === 'Weight Loss') {
     // Deficit of 300-500 kcal
@@ -47,7 +53,7 @@ export const calculateDailyCalorieTarget = (bmr, activity_factor, goal, biologic
   }
   
   // Enforce safety floors
-  const floor = biological_sex === 'Male' ? 1500 : 1200;
+  const floor = sex === 'Male' ? 1500 : 1200;
   return Math.max(target, floor);
 };
 

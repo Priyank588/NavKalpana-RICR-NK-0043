@@ -8,19 +8,23 @@
     "start": "node server.js",
     "dev": "nodemon server.js"
   },
-  "keywords": ["fitness", "ai", "adaptive"],
+  "keywords": [
+    "fitness",
+    "ai",
+    "adaptive"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
-    "express": "^4.18.2",
-    "mongoose": "^7.0.0",
     "bcrypt": "^5.1.0",
-    "jsonwebtoken": "^9.0.0",
     "cors": "^2.8.5",
     "dotenv": "^16.0.3",
-    "@google/generative-ai": "^0.21.0"
+    "express": "^4.18.2",
+    "groq-sdk": "^0.37.0",
+    "jsonwebtoken": "^9.0.0",
+    "mongoose": "^7.0.0"
   },
   "devDependencies": {
-    "nodemon": "^2.0.20"
+    "nodemon": "^3.1.14"
   }
 }

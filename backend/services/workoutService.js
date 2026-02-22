@@ -3,6 +3,7 @@ import WorkoutPlan from '../models/WorkoutPlanV2.js';
 import ProgressLog from '../models/ProgressLog.js';
 import { generateWeeklyWorkout } from '../utils/workoutGenerator.js';
 import { generateAIWorkoutPlan } from './groqService.js';
+import { getWeekExercises, calculateProgressiveOverload } from './exerciseLogService.js';
 import Profile from '../models/Profile.js';
 
 export const generateWorkoutPlan = async (user_id, week_number = 1) => {
@@ -11,6 +12,18 @@ export const generateWorkoutPlan = async (user_id, week_number = 1) => {
   
   if (!profile) {
     throw new Error('Profile not found. Please complete profile setup first.');
+  }
+  
+  // Determine training frequency based on activity level and available days
+  let trainingDaysPerWeek = profile.available_days_per_week || 4;
+  
+  // Adjust based on activity level
+  if (profile.activity_level === 'Sedentary' && trainingDaysPerWeek > 3) {
+    trainingDaysPerWeek = 3; // Limit sedentary users to 3 days initially
+    console.log('⚠️ Reduced training days to 3 for sedentary activity level');
+  } else if (profile.activity_level === 'Active' && trainingDaysPerWeek < 5) {
+    trainingDaysPerWeek = Math.min(trainingDaysPerWeek + 1, 6); // Active users can handle more
+    console.log('✅ Increased training days for active lifestyle');
   }
   
   let workoutDays, weekSummary, progressionNotes, recoveryTips, motivationMessage;
@@ -33,15 +46,28 @@ export const generateWorkoutPlan = async (user_id, week_number = 1) => {
       motivationMessage = aiPlan.motivation_message;
     } catch (error) {
       console.error('❌ Groq AI generation failed, falling back to template:', error.message);
-      // Fallback to template-based generation
-      workoutDays = generateWeeklyWorkout(profile.goal, profile.experience_level, 'Normal');
-      weekSummary = `Week ${week_number} - ${profile.experience_level} ${profile.goal} Program`;
+      // Fallback to template-based generation with injury filtering and activity level
+      workoutDays = generateWeeklyWorkout(
+        profile.goal, 
+        profile.experience_level, 
+        'Normal', 
+        profile.injuries_limitations,
+        trainingDaysPerWeek,
+        profile.activity_level
+      );
+      weekSummary = `Week ${week_number} - ${profile.experience_level} ${profile.goal} Program (${trainingDaysPerWeek} days/week)`;
+      if (profile.injuries_limitations && profile.injuries_limitations.trim() !== '') {
+        weekSummary += ` (Modified for: ${profile.injuries_limitations})`;
+      }
     }
   } else {
     console.log('⚠️  Using template-based workout generation (Groq AI not configured)');
-    // Use template-based generation
-    workoutDays = generateWeeklyWorkout(profile.goal, profile.experience_level, 'Normal');
+    // Use template-based generation with injury filtering
+    workoutDays = generateWeeklyWorkout(profile.goal, profile.experience_level, 'Normal', profile.injuries_limitations);
     weekSummary = `Week ${week_number} - ${profile.experience_level} ${profile.goal} Program`;
+    if (profile.injuries_limitations && profile.injuries_limitations.trim() !== '') {
+      weekSummary += ` (Modified for: ${profile.injuries_limitations})`;
+    }
   }
   
   // Validate workoutDays is an array
@@ -52,6 +78,47 @@ export const generateWorkoutPlan = async (user_id, week_number = 1) => {
   
   console.log(`Creating workout plan with ${workoutDays.length} days`);
   console.log('First workout day structure:', JSON.stringify(workoutDays[0], null, 2));
+  
+  // Apply progressive overload if this is week 2+
+  if (week_number > 1) {
+    try {
+      const previousWeekExercises = await getWeekExercises(user_id, week_number - 1);
+      
+      if (previousWeekExercises.length > 0) {
+        console.log(`📈 Applying progressive overload based on week ${week_number - 1} performance...`);
+        
+        // Apply progressive overload to each exercise
+        for (const day of workoutDays) {
+          if (day.exercises && day.exercises.length > 0) {
+            for (const exercise of day.exercises) {
+              const overloadRec = await calculateProgressiveOverload(user_id, exercise.name);
+              
+              if (overloadRec.recommendation === 'increase_weight') {
+                exercise.guidance += ` | 💪 INCREASE WEIGHT: Add ${overloadRec.suggested_weight_increase}kg from last week`;
+                exercise.intensity_level = 'High';
+              } else if (overloadRec.recommendation === 'increase_reps') {
+                // Increase reps
+                const currentReps = exercise.reps.split('-');
+                if (currentReps.length === 2) {
+                  const newMin = parseInt(currentReps[0]) + 2;
+                  const newMax = parseInt(currentReps[1]) + 2;
+                  exercise.reps = `${newMin}-${newMax}`;
+                  exercise.guidance += ` | 📈 INCREASED REPS: ${overloadRec.reason}`;
+                }
+              } else if (overloadRec.recommendation === 'decrease') {
+                exercise.guidance += ` | ⚠️ REDUCE INTENSITY: ${overloadRec.reason}`;
+                exercise.intensity_level = 'Light';
+              }
+            }
+          }
+        }
+        
+        progressionNotes = progressionNotes || 'Progressive overload applied based on your previous week\'s performance. Keep pushing!';
+      }
+    } catch (error) {
+      console.log('Could not apply progressive overload:', error.message);
+    }
+  }
   
   // Create plain object first
   const workoutData = {

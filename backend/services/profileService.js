@@ -11,9 +11,9 @@ export const createProfile = async (user_id, profileData) => {
   // Calculate derived fields
   const height_m = profileData.height_cm / 100;
   const bmi = calculateBMI(profileData.weight_kg, profileData.height_cm);
-  const bmr = calculateBMR(profileData.weight_kg, profileData.height_cm, profileData.age, profileData.biological_sex);
+  const bmr = calculateBMR(profileData.weight_kg, profileData.height_cm, profileData.age, profileData.gender);
   const activity_factor = getActivityFactor(profileData.activity_level);
-  const daily_calorie_target = calculateDailyCalorieTarget(bmr, activity_factor, profileData.goal, profileData.biological_sex);
+  const daily_calorie_target = calculateDailyCalorieTarget(bmr, activity_factor, profileData.goal, profileData.gender);
   
   const profile = new Profile({
     user_id,
@@ -46,13 +46,13 @@ export const updateProfile = async (user_id, profileData) => {
       ...profileData,
       height_m: profileData.height_cm / 100,
       bmi: calculateBMI(profileData.weight_kg, profileData.height_cm),
-      bmr: calculateBMR(profileData.weight_kg, profileData.height_cm, profileData.age, profileData.biological_sex),
+      bmr: calculateBMR(profileData.weight_kg, profileData.height_cm, profileData.age, profileData.gender),
       activity_factor: getActivityFactor(profileData.activity_level),
       daily_calorie_target: calculateDailyCalorieTarget(
-        calculateBMR(profileData.weight_kg, profileData.height_cm, profileData.age, profileData.biological_sex),
+        calculateBMR(profileData.weight_kg, profileData.height_cm, profileData.age, profileData.gender),
         getActivityFactor(profileData.activity_level),
         profileData.goal,
-        profileData.biological_sex
+        profileData.gender
       ),
       updated_at: new Date()
     },
