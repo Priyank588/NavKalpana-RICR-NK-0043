@@ -20,6 +20,10 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
     select: false
   },
+  last_login: {
+    type: Date,
+    default: null
+  },
   created_at: {
     type: Date,
     default: Date.now

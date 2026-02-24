@@ -229,6 +229,62 @@ ANALYZE THE USER'S DATA:
 7. IMPORTANT: Check their GOAL TIMELINE - they need to reach ${userContext.profile.target_weight_kg}kg in ${userContext.timeline ? userContext.timeline.timeline.optimal_weeks + ' weeks' : 'their planned timeframe'}
 8. Adjust calorie target if they're behind or ahead of schedule based on their actual weekly rate
 
+=== INDIAN FOOD FOCUS ===
+CRITICAL: This meal plan MUST prioritize authentic Indian cuisine. Use these guidelines:
+
+BREAKFAST OPTIONS (Choose from):
+- Poha (flattened rice) with vegetables and peanuts
+- Upma (semolina) with vegetables
+- Idli with sambar and coconut chutney
+- Dosa (plain/masala) with sambar
+- Paratha (whole wheat) with curd/pickle
+- Daliya (broken wheat) porridge
+- Besan chilla (gram flour pancake)
+- Vegetable sandwich with mint chutney
+
+LUNCH OPTIONS (Must include):
+- Dal (Moong/Masoor/Toor/Chana) - ESSENTIAL
+- Rice (brown/white based on goal)
+- 2 Chapati/Roti (whole wheat)
+- Sabzi (seasonal vegetable curry)
+- Raita (yogurt with cucumber/boondi)
+- Salad (cucumber, tomato, onion, carrot)
+
+DINNER OPTIONS (Must include):
+- Dal or Rajma/Chole (protein source)
+- 2-3 Chapati/Roti
+- Sabzi (different from lunch)
+- Salad
+- Optional: Small portion of rice
+
+SNACKS (Choose from):
+- Roasted chana (chickpeas)
+- Makhana (fox nuts)
+- Sprouts chaat
+- Fruit with chaat masala
+- Buttermilk (chaas)
+- Roasted peanuts
+- Cucumber/carrot sticks with hummus
+- Handful of almonds/walnuts
+
+COMMON INDIAN VEGETABLES TO USE:
+- Bhindi (okra), Baingan (eggplant), Aloo (potato), Gobi (cauliflower)
+- Palak (spinach), Methi (fenugreek), Lauki (bottle gourd)
+- Tinda, Tori (ridge gourd), Karela (bitter gourd)
+- Beans, Peas, Capsicum, Tomatoes
+
+PROTEIN SOURCES (Vegetarian):
+- Dal (all types), Rajma, Chole, Paneer
+- Soya chunks, Tofu, Sprouts
+- Curd/Dahi, Buttermilk
+- Eggs (if not pure vegetarian)
+
+COOKING METHODS:
+- Minimize oil (1-2 tsp per meal)
+- Use tadka (tempering) for flavor
+- Prefer steaming, boiling, roasting
+- Use Indian spices: turmeric, cumin, coriander, garam masala
+
 Generate a meal plan in JSON format with this EXACT structure:
 {
   "week_summary": "Personalized nutrition overview referencing their specific progress",
@@ -237,28 +293,31 @@ Generate a meal plan in JSON format with this EXACT structure:
       "meal_number": 1,
       "meal_name": "Breakfast",
       "time_suggestion": "7:00 AM",
-      "description": "Detailed meal with specific portions for THEIR calorie target",
+      "description": "Detailed INDIAN meal with specific portions for THEIR calorie target",
       "estimated_calories": 500,
       "macros": {
         "protein_g": 30,
         "carbs_g": 50,
         "fat_g": 15
       },
-      "ingredients": ["specific ingredient with amount"],
-      "preparation_tips": "Easy prep instructions",
+      "ingredients": ["specific Indian ingredient with amount in grams/cups"],
+      "preparation_tips": "Easy prep instructions using Indian cooking methods",
       "why_this_meal": "Explain how this helps THEIR specific goal"
     }
   ],
   "hydration_goal": "Specific water intake for their weight",
   "supplement_suggestions": "Based on THEIR diet and goals",
-  "meal_prep_tips": "Practical tips for THEIR lifestyle",
+  "meal_prep_tips": "Practical tips for THEIR lifestyle with Indian cooking context",
   "adjustment_notes": "How to adjust based on THEIR progress"
 }
 
 IMPORTANT:
 - Return ONLY valid JSON, no markdown or extra text
 - Total calories should match their target: ${userContext.profile.daily_calorie_target} kcal
-- Reference their actual weight progress in recommendations`;
+- ALL meals MUST be Indian cuisine (Dal, Rice, Chapati, Sabzi, etc.)
+- Use Indian measurements and cooking terms
+- Reference their actual weight progress in recommendations
+- Ensure meals are practical and commonly available in India`;
 
   try {
     const groqClient = getGroqClient();
@@ -337,6 +396,9 @@ RESPONSE FORMAT REQUIREMENTS:
 5. Use bullet points for sub-items within steps
 6. Keep paragraphs SHORT (2-3 sentences max)
 7. Use line breaks between sections for readability
+8. Highlight IMPORTANT information with IMPORTANT: prefix
+9. Highlight CRITICAL warnings with CRITICAL: prefix
+10. Use NOTE: for helpful tips
 
 ANALYZE THEIR COMPLETE DATA:
 1. Review their progress history - what patterns do you see?
@@ -348,27 +410,29 @@ ANALYZE THEIR COMPLETE DATA:
 
 Provide a response in JSON format with this EXACT structure:
 {
-  "response": "Hi ${userContext.user.name}! [Brief 2-3 sentence summary of their situation]\\n\\nHere's your personalized plan:\\n\\n**Step 1: [Title]**\\n[2-3 sentences explaining this step]\\n\\n**Step 2: [Title]**\\n[2-3 sentences explaining this step]\\n\\n**Step 3: [Title]**\\n[2-3 sentences explaining this step]\\n\\n**Key Insight:**\\n[One sentence about their data that supports this advice]",
+  "response": "Hi ${userContext.user.name}!\\n\\nBrief 2-3 sentence summary of their situation.\\n\\nStep 1: [Action Title]\\nClear explanation with specific numbers (e.g., increase protein to 150g daily).\\n\\nStep 2: [Action Title]\\nClear explanation with specific numbers.\\n\\nStep 3: [Action Title]\\nClear explanation with specific numbers.\\n\\nIMPORTANT: Highlight critical information here.\\n\\nNOTE: Add helpful tips here.",
   "steps": [
-    "Step 1: [Specific action with numbers/details]",
-    "Step 2: [Specific action with numbers/details]",
-    "Step 3: [Specific action with numbers/details]",
-    "Step 4: [Specific action with numbers/details]"
+    "Increase daily protein intake to 150g (currently at 100g)",
+    "Add 2 extra sets to compound exercises",
+    "Reduce rest days from 3 to 2 per week",
+    "Track weight every Monday morning"
   ],
-  "tip": "💡 Pro Tip: [One practical tip specifically for THEIR situation]",
-  "data_insights": "📊 Based on your data: [Key insight with actual numbers from their progress]",
+  "tip": "Meal prep on Sundays to hit your 150g protein target consistently",
+  "data_insights": "Your 85% workout adherence is excellent, but diet adherence at 60% needs improvement for your muscle gain goal",
   "confidence": "High"
 }
 
-IMPORTANT:
-- Return ONLY valid JSON, no markdown or extra text
-- Use \\n\\n for line breaks between sections
-- Use **bold** for step titles
-- Keep each paragraph SHORT (2-3 sentences)
-- Make steps ACTIONABLE with specific numbers
-- Reference their ACTUAL statistics (e.g., "your 85% adherence", "your 2kg loss")
-- Address them by name at the start
-- Format like ChatGPT: clear structure, easy to scan`;
+FORMATTING RULES:
+- Use Step 1:, Step 2:, etc. for main action items
+- Use numbers with units (70kg, 2000 kcal, 85%)
+- Use IMPORTANT: for critical information
+- Use CRITICAL: for warnings
+- Use NOTE: for helpful tips
+- Use \\n\\n for paragraph breaks
+- Keep sentences short and actionable
+- Reference ACTUAL data (their weight, adherence %, etc.)
+- Address them by name
+- Be specific with numbers and timeframes`;
 
   try {
     const groqClient = getGroqClient();

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { profileService } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
@@ -75,31 +75,31 @@ export const ProfilePage = () => {
   };
 
   if (loading) return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex items-center justify-center">
       <div className="text-center">
         <div className="text-7xl mb-4 animate-bounce-subtle">⏳</div>
-        <p className="text-2xl font-bold text-white">Loading your profile...</p>
+        <p className="text-2xl font-bold text-gray-900">Loading your profile...</p>
       </div>
     </div>
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 py-8 px-4">
-      {/* Animated Background Grid */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(14,165,233,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(14,165,233,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 py-8 px-4">
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
       
       <div className="max-w-5xl mx-auto relative z-10">
         <div className="flex justify-between items-center mb-8 animate-slide-down">
           <div>
             <h1 className="text-5xl font-bold gradient-text mb-2">👤 My Profile</h1>
-            <p className="text-gray-400">Manage your fitness profile and preferences</p>
+            <p className="text-gray-600">Manage your fitness profile and preferences</p>
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => navigate('/dashboard')}
-              className="group relative px-6 py-3 bg-slate-800/50 backdrop-blur-sm border-2 border-slate-700 text-white font-bold rounded-xl hover:bg-slate-700/50 hover:border-cyan-500/50 transition-all duration-300 transform hover:scale-105 overflow-hidden"
+              className="group relative px-6 py-3 bg-white border-2 border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-50 hover:border-violet-300 transition-all duration-300 transform hover:scale-105"
             >
-              <span className="relative flex items-center gap-2">
+              <span className="flex items-center gap-2">
                 <span className="text-xl">🏠</span>
                 <span>Back to Dashboard</span>
               </span>
@@ -117,16 +117,17 @@ export const ProfilePage = () => {
           </div>
         </div>
 
-        <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 animate-scale-in">{!editing ? (
+        <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 animate-scale-in">
+          {!editing ? (
             // View Mode
             <div>
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-3xl font-bold text-white">Profile Information</h2>
+                <h2 className="text-3xl font-bold text-gray-900">Profile Information</h2>
                 <button
                   onClick={() => setEditing(true)}
-                  className="group relative px-6 py-3 bg-gradient-to-r from-cyan-500 to-sky-500 text-white font-bold rounded-xl shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 overflow-hidden"
+                  className="group relative px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-violet-500/50 transition-all duration-300 transform hover:scale-105 overflow-hidden"
                 >
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-sky-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   <span className="relative flex items-center gap-2">
                     <span>✏️</span>
                     <span>Edit Profile</span>
@@ -135,64 +136,64 @@ export const ProfilePage = () => {
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Age</label>
-                  <p className="text-white text-xl font-semibold">{profile.age} years</p>
+                <div className="bg-gradient-to-br from-violet-50 to-purple-50 p-4 rounded-xl border border-violet-200">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Age</label>
+                  <p className="text-gray-900 text-xl font-semibold">{profile.age} years</p>
                 </div>
                 
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Gender</label>
-                  <p className="text-white text-xl font-semibold">{profile.gender}</p>
+                <div className="bg-gradient-to-br from-blue-50 to-indigo-50 p-4 rounded-xl border border-blue-200">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Gender</label>
+                  <p className="text-gray-900 text-xl font-semibold">{profile.gender}</p>
                 </div>
                 
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Current Weight</label>
-                  <p className="text-white text-xl font-semibold">{profile.weight_kg} kg</p>
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 p-4 rounded-xl border border-green-200">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Current Weight</label>
+                  <p className="text-gray-900 text-xl font-semibold">{profile.weight_kg} kg</p>
                 </div>
                 
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Height</label>
-                  <p className="text-white text-xl font-semibold">{profile.height_cm} cm</p>
+                <div className="bg-gradient-to-br from-cyan-50 to-sky-50 p-4 rounded-xl border border-cyan-200">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Height</label>
+                  <p className="text-gray-900 text-xl font-semibold">{profile.height_cm} cm</p>
                 </div>
                 
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Goal</label>
-                  <p className="text-white text-xl font-semibold">{profile.goal}</p>
+                <div className="bg-gradient-to-br from-pink-50 to-rose-50 p-4 rounded-xl border border-pink-200">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Goal</label>
+                  <p className="text-gray-900 text-xl font-semibold">{profile.goal}</p>
                 </div>
                 
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Target Weight</label>
-                  <p className="text-white text-xl font-semibold">{profile.target_weight_kg} kg</p>
+                <div className="bg-gradient-to-br from-orange-50 to-amber-50 p-4 rounded-xl border border-orange-200">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Target Weight</label>
+                  <p className="text-gray-900 text-xl font-semibold">{profile.target_weight_kg} kg</p>
                 </div>
                 
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Experience Level</label>
-                  <p className="text-white text-xl font-semibold">{profile.experience_level}</p>
+                <div className="bg-gradient-to-br from-purple-50 to-pink-50 p-4 rounded-xl border border-purple-200">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Experience Level</label>
+                  <p className="text-gray-900 text-xl font-semibold">{profile.experience_level}</p>
                 </div>
                 
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Training Days/Week</label>
-                  <p className="text-white text-xl font-semibold">{profile.available_days_per_week} days</p>
+                <div className="bg-gradient-to-br from-teal-50 to-cyan-50 p-4 rounded-xl border border-teal-200">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Training Days/Week</label>
+                  <p className="text-gray-900 text-xl font-semibold">{profile.available_days_per_week} days</p>
                 </div>
                 
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Daily Calorie Target</label>
-                  <p className="text-white text-xl font-semibold">{profile.daily_calorie_target} kcal</p>
+                <div className="bg-gradient-to-br from-yellow-50 to-orange-50 p-4 rounded-xl border border-yellow-200">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Daily Calorie Target</label>
+                  <p className="text-gray-900 text-xl font-semibold">{profile.daily_calorie_target} kcal</p>
                 </div>
                 
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30 md:col-span-2">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Dietary Preferences</label>
-                  <p className="text-white text-lg">{profile.dietary_preferences || 'None specified'}</p>
+                <div className="bg-gradient-to-br from-emerald-50 to-green-50 p-4 rounded-xl border border-emerald-200 md:col-span-2">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Dietary Preferences</label>
+                  <p className="text-gray-900 text-lg">{profile.dietary_preferences || 'None specified'}</p>
                 </div>
                 
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30 md:col-span-2">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Food Allergies</label>
-                  <p className="text-white text-lg">{profile.allergies || 'None specified'}</p>
+                <div className="bg-gradient-to-br from-amber-50 to-orange-50 p-4 rounded-xl border border-amber-200 md:col-span-2">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Food Allergies</label>
+                  <p className="text-gray-900 text-lg">{profile.allergies || 'None specified'}</p>
                 </div>
                 
-                <div className="bg-slate-700/30 p-4 rounded-xl border border-slate-600/30 md:col-span-2">
-                  <label className="block text-sm font-bold text-gray-400 mb-2">Injuries/Limitations</label>
-                  <p className="text-white text-lg">{profile.injuries_limitations || 'None specified'}</p>
+                <div className="bg-gradient-to-br from-red-50 to-rose-50 p-4 rounded-xl border border-red-200 md:col-span-2">
+                  <label className="block text-sm font-bold text-gray-600 mb-2">Injuries/Limitations</label>
+                  <p className="text-gray-900 text-lg">{profile.injuries_limitations || 'None specified'}</p>
                 </div>
               </div>
             </div>
@@ -200,11 +201,11 @@ export const ProfilePage = () => {
             // Edit Mode
             <form onSubmit={handleSubmit}>
               <div className="flex justify-between items-center mb-8">
-                <h2 className="text-3xl font-bold text-white">Edit Profile</h2>
+                <h2 className="text-3xl font-bold text-gray-900">Edit Profile</h2>
                 <button
                   type="button"
                   onClick={() => setEditing(false)}
-                  className="group relative px-6 py-3 bg-slate-700/50 border-2 border-slate-600 text-white font-bold rounded-xl hover:bg-slate-600/50 hover:border-red-500/50 transition-all duration-300 transform hover:scale-105"
+                  className="group relative px-6 py-3 bg-white border-2 border-gray-300 text-gray-700 font-bold rounded-xl hover:bg-gray-50 hover:border-red-400 transition-all duration-300 transform hover:scale-105"
                 >
                   <span className="flex items-center gap-2">
                     <span>❌</span>
@@ -215,24 +216,24 @@ export const ProfilePage = () => {
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div>
-                  <label className="block text-sm font-bold text-gray-300 mb-2">Age</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Age</label>
                   <input
                     type="number"
                     name="age"
                     value={formData.age}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-slate-700/50 border-2 border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-100 transition-all duration-300"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-300 mb-2">Gender</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Gender</label>
                   <select
                     name="gender"
                     value={formData.gender}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-slate-700/50 border-2 border-slate-600 rounded-xl text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-100 transition-all duration-300"
                     required
                   >
                     <option value="Male">Male</option>
@@ -242,37 +243,37 @@ export const ProfilePage = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-300 mb-2">Current Weight (kg)</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Current Weight (kg)</label>
                   <input
                     type="number"
                     step="0.1"
                     name="weight_kg"
                     value={formData.weight_kg}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-slate-700/50 border-2 border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-green-500 focus:ring-4 focus:ring-green-100 transition-all duration-300"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-300 mb-2">Height (cm)</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Height (cm)</label>
                   <input
                     type="number"
                     name="height_cm"
                     value={formData.height_cm}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-slate-700/50 border-2 border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-300"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-300 mb-2">Goal</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Goal</label>
                   <select
                     name="goal"
                     value={formData.goal}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-slate-700/50 border-2 border-slate-600 rounded-xl text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-pink-500 focus:ring-4 focus:ring-pink-100 transition-all duration-300"
                     required
                   >
                     <option value="Weight Loss">Weight Loss</option>
@@ -282,25 +283,25 @@ export const ProfilePage = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-300 mb-2">Target Weight (kg)</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Target Weight (kg)</label>
                   <input
                     type="number"
                     step="0.1"
                     name="target_weight_kg"
                     value={formData.target_weight_kg}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-slate-700/50 border-2 border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-orange-500 focus:ring-4 focus:ring-orange-100 transition-all duration-300"
                     required
                   />
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-300 mb-2">Experience Level</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Experience Level</label>
                   <select
                     name="experience_level"
                     value={formData.experience_level}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-slate-700/50 border-2 border-slate-600 rounded-xl text-white focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 focus:outline-none focus:border-purple-500 focus:ring-4 focus:ring-purple-100 transition-all duration-300"
                     required
                   >
                     <option value="Beginner">Beginner</option>
@@ -310,7 +311,7 @@ export const ProfilePage = () => {
                 </div>
                 
                 <div>
-                  <label className="block text-sm font-bold text-gray-300 mb-2">Training Days/Week</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Training Days/Week</label>
                   <input
                     type="number"
                     min="1"
@@ -318,43 +319,43 @@ export const ProfilePage = () => {
                     name="available_days_per_week"
                     value={formData.available_days_per_week}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 bg-slate-700/50 border-2 border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-indigo-500 focus:ring-4 focus:ring-indigo-100 transition-all duration-300"
                     required
                   />
                 </div>
                 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-bold text-gray-300 mb-2">Dietary Preferences</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Dietary Preferences</label>
                   <input
                     type="text"
                     name="dietary_preferences"
                     value={formData.dietary_preferences}
                     onChange={handleChange}
                     placeholder="e.g., Vegetarian, Vegan, Keto"
-                    className="w-full px-4 py-3 bg-slate-700/50 border-2 border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-100 transition-all duration-300"
                   />
                 </div>
                 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-bold text-gray-300 mb-2">Food Allergies</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Food Allergies</label>
                   <input
                     type="text"
                     name="allergies"
                     value={formData.allergies}
                     onChange={handleChange}
                     placeholder="e.g., Nuts, Dairy, Gluten"
-                    className="w-full px-4 py-3 bg-slate-700/50 border-2 border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-orange-500 focus:ring-2 focus:ring-orange-500/20 transition-all duration-300"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-100 transition-all duration-300"
                   />
                 </div>
                 
                 <div className="md:col-span-2">
-                  <label className="block text-sm font-bold text-gray-300 mb-2">Injuries/Limitations</label>
+                  <label className="block text-sm font-bold text-gray-700 mb-2">Injuries/Limitations</label>
                   <textarea
                     name="injuries_limitations"
                     value={formData.injuries_limitations}
                     onChange={handleChange}
                     placeholder="e.g., Lower back pain, Knee injury"
-                    className="w-full px-4 py-3 bg-slate-700/50 border-2 border-slate-600 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-red-500 focus:ring-2 focus:ring-red-500/20 transition-all duration-300 resize-none"
+                    className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-red-500 focus:ring-4 focus:ring-red-100 transition-all duration-300 resize-none"
                     rows="3"
                   />
                 </div>
@@ -363,9 +364,9 @@ export const ProfilePage = () => {
               <div className="mt-8">
                 <button
                   type="submit"
-                  className="group relative px-6 py-4 bg-gradient-to-r from-cyan-500 to-sky-500 text-white font-bold rounded-xl shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 w-full text-lg overflow-hidden"
+                  className="group relative px-6 py-4 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-violet-500/50 transition-all duration-300 transform hover:scale-105 w-full text-lg overflow-hidden"
                 >
-                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-sky-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
                   <span className="relative flex items-center justify-center gap-2">
                     <span>💾</span>
                     <span>Save Changes</span>

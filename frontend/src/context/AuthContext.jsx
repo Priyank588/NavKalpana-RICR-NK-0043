@@ -29,6 +29,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.register(name, email, password);
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('isReturningUser', 'false'); // New user
       setToken(response.data.token);
       setUser(response.data.user);
       return response.data;
@@ -46,6 +47,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.login(email, password);
       localStorage.setItem('token', response.data.token);
+      localStorage.setItem('isReturningUser', response.data.user.isReturningUser ? 'true' : 'false');
       setToken(response.data.token);
       setUser(response.data.user);
       return response.data;
@@ -59,6 +61,8 @@ export const AuthProvider = ({ children }) => {
 
   const logout = () => {
     localStorage.removeItem('token');
+    localStorage.removeItem('isReturningUser');
+    localStorage.removeItem('fitai_chat_history'); // Clear chat history on logout
     setToken(null);
     setUser(null);
   };

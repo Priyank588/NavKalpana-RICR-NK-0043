@@ -1,5 +1,6 @@
 import Profile from '../models/Profile.js';
 import { calculateBMI, calculateBMR, getActivityFactor, calculateDailyCalorieTarget } from '../utils/calculationUtils.js';
+import * as measurementService from './measurementService.js';
 
 export const createProfile = async (user_id, profileData) => {
   // Check if profile already exists
@@ -26,6 +27,17 @@ export const createProfile = async (user_id, profileData) => {
   });
   
   await profile.save();
+  
+  // Save initial measurements if provided
+  if (profileData.initial_measurements) {
+    try {
+      await measurementService.saveInitialMeasurements(user_id, profileData.initial_measurements);
+    } catch (error) {
+      console.error('Failed to save initial measurements:', error);
+      // Don't fail profile creation if measurements fail
+    }
+  }
+  
   return profile;
 };
 

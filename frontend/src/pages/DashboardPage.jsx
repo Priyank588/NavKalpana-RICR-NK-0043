@@ -1,19 +1,28 @@
 import React, { useState, useEffect } from 'react';
-import { workoutService, progressService, profileService } from '../services/apiService';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
+import { workoutService, progressService, profileService, dailyLogService, measurementService } from '../services/apiService';
+import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar, Legend } from 'recharts';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 
 export const DashboardPage = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [profile, setProfile] = useState(null);
   const [workout, setWorkout] = useState(null);
   const [habitScore, setHabitScore] = useState(null);
   const [progress, setProgress] = useState([]);
   const [dropoffRisk, setDropoffRisk] = useState(null);
+  const [recentLogs, setRecentLogs] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [showRiskDetails, setShowRiskDetails] = useState(false);
+  const [isReturningUser, setIsReturningUser] = useState(false);
+  const [activeView, setActiveView] = useState('dashboard');
+  const [currentExerciseIndex, setCurrentExerciseIndex] = useState(0);
+  const [measurementReminder, setMeasurementReminder] = useState(null);
+
+  useEffect(() => {
+    const returningStatus = localStorage.getItem('isReturningUser');
+    setIsReturningUser(returningStatus === 'true');
+  }, []);
 
   const handleLogout = () => {
     logout();
@@ -23,12 +32,14 @@ export const DashboardPage = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [profileRes, workoutRes, habitRes, progressRes, dropoffRes] = await Promise.all([
+        const [profileRes, workoutRes, habitRes, progressRes, dropoffRes, logsRes, reminderRes] = await Promise.all([
           profileService.getProfile(),
           workoutService.getLatestWorkout(),
           progressService.getCurrentHabitScore(),
-          progressService.getRecentProgress(12),
-          progressService.checkDropoffRisk()
+          progressService.getRecentProgress(7),
+          progressService.checkDropoffRisk(),
+          dailyLogService.getRecentLogs(7),
+          measurementService.checkReminder().catch(() => ({ data: { reminder_due: false } }))
         ]);
         
         setProfile(profileRes.data);
@@ -36,6 +47,8 @@ export const DashboardPage = () => {
         setHabitScore(habitRes.data);
         setProgress(progressRes.data.reverse());
         setDropoffRisk(dropoffRes.data);
+        setRecentLogs(logsRes.data);
+        setMeasurementReminder(reminderRes.data);
       } catch (err) {
         console.error('Error fetching dashboard data:', err);
       } finally {
@@ -47,434 +60,920 @@ export const DashboardPage = () => {
   }, []);
 
   if (loading) return (
-    <div className="page-container bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 flex items-center justify-center">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 flex items-center justify-center">
       <div className="text-center">
         <div className="text-7xl mb-4 animate-bounce-subtle">⏳</div>
-        <p className="text-2xl font-bold text-gray-800">Loading...</p>
+        <p className="text-2xl font-bold text-gray-900">Loading...</p>
       </div>
     </div>
   );
 
+  // Calculate REAL daily activity completion from actual logs
+  const todayLog = recentLogs.length > 0 ? recentLogs[recentLogs.length - 1] : null;
+  const completionPercentage = todayLog 
+    ? Math.round(((todayLog.workout_completed ? 1 : 0) + (todayLog.diet_followed ? 1 : 0)) / 2 * 100)
+    : 0;
+
+  // Get REAL today's workout from actual workout plan based on current day
+  const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
+  const todayWorkout = workout?.workouts?.find(w => w.day === today) || 
+                       workout?.workouts?.find(w => !w.rest_day); // Fallback to first non-rest day
+  
+  // Get today's exercises
+  const todayExercises = todayWorkout?.exercises || [];
+
+  // Generate dynamic motivation based on real data
+  const getDailyMotivation = () => {
+    const dayOfWeek = new Date().getDay();
+    
+    // Check if today is a rest day
+    if (todayWorkout?.rest_day) {
+      return {
+        icon: '🛌',
+        title: 'Rest Day',
+        message: '"Rest when you\'re weary. Refresh and renew yourself, your body, your mind, your spirit. Then get back to work." - Ralph Marston',
+        color: 'from-green-500 to-emerald-600'
+      };
+    }
+    
+    // Check if workout is completed today
+    const todayCompleted = todayLog?.workout_completed;
+    if (todayCompleted) {
+      return {
+        icon: '🎉',
+        title: 'Well Done!',
+        message: '"Success is the sum of small efforts repeated day in and day out." - Robert Collier',
+        color: 'from-purple-500 to-pink-600'
+      };
+    }
+    
+    // Powerful motivational quotes for each day
+    const motivations = {
+      0: { // Sunday
+        icon: '🌅',
+        title: 'Sunday Motivation',
+        message: '"The only bad workout is the one that didn\'t happen." - Unknown',
+        color: 'from-orange-500 to-red-600'
+      },
+      1: { // Monday
+        icon: '💪',
+        title: 'Monday Motivation',
+        message: '"The body achieves what the mind believes." - Napoleon Hill',
+        color: 'from-blue-500 to-indigo-600'
+      },
+      2: { // Tuesday
+        icon: '🔥',
+        title: 'Tuesday Motivation',
+        message: '"Strength doesn\'t come from what you can do. It comes from overcoming the things you once thought you couldn\'t." - Rikki Rogers',
+        color: 'from-red-500 to-orange-600'
+      },
+      3: { // Wednesday
+        icon: '⚡',
+        title: 'Wednesday Motivation',
+        message: '"The pain you feel today will be the strength you feel tomorrow." - Arnold Schwarzenegger',
+        color: 'from-yellow-500 to-amber-600'
+      },
+      4: { // Thursday
+        icon: '🎯',
+        title: 'Thursday Motivation',
+        message: '"Don\'t limit your challenges. Challenge your limits." - Unknown',
+        color: 'from-teal-500 to-cyan-600'
+      },
+      5: { // Friday
+        icon: '🚀',
+        title: 'Friday Motivation',
+        message: '"Your body can stand almost anything. It\'s your mind that you have to convince." - Andrew Murphy',
+        color: 'from-violet-500 to-purple-600'
+      },
+      6: { // Saturday
+        icon: '💯',
+        title: 'Saturday Motivation',
+        message: '"The difference between try and triumph is a little umph." - Marvin Phillips',
+        color: 'from-pink-500 to-rose-600'
+      }
+    };
+    
+    return motivations[dayOfWeek] || motivations[1];
+  };
+
+  const dailyMotivation = getDailyMotivation();
+
+  // Calculate REAL weekly stats from actual daily logs
+  const weeklyWorkouts = recentLogs.filter(log => log.workout_completed).length;
+  const totalWaterIntake = recentLogs.reduce((sum, log) => sum + (log.water_intake_liters || 0), 0);
+  const avgWaterIntake = recentLogs.length > 0 ? (totalWaterIntake / recentLogs.length).toFixed(1) : 0;
+  const weeklyCalories = recentLogs.reduce((sum, log) => sum + (log.calories_consumed || 0), 0);
+  const avgCalories = recentLogs.length > 0 ? Math.round(weeklyCalories / recentLogs.length) : 0;
+  const avgSleep = recentLogs.length > 0 ? (recentLogs.reduce((sum, log) => sum + (log.sleep_hours || 0), 0) / recentLogs.length).toFixed(1) : 0;
+
+  // Prepare REAL performance data from actual daily logs
+  const performanceData = recentLogs.slice(-7).map((log, idx) => {
+    const logDate = new Date(log.date);
+    const dayName = logDate.toLocaleDateString('en-US', { weekday: 'short' });
+    
+    // Convert energy level to numeric value for chart
+    const energyMap = { 'Low': 1, 'Medium': 2, 'High': 3 };
+    const energyValue = energyMap[log.energy_level] || 2;
+    
+    return {
+      day: dayName,
+      calories: log.calories_consumed || 0,
+      water: log.water_intake_liters || 0,
+      sleep: log.sleep_hours || 0,
+      energy: energyValue,
+      workout: log.workout_completed ? 1 : 0,
+      diet: log.diet_followed ? 1 : 0
+    };
+  });
+
+  // Calculate adherence data for last 4 weeks
+  const adherenceByWeek = {};
+  const fourWeeksInDays = 28;
+  recentLogs.slice(-fourWeeksInDays).forEach(log => {
+    const logDate = new Date(log.date);
+    const weekNum = Math.ceil((logDate - new Date(logDate.getFullYear(), 0, 1)) / (7 * 24 * 60 * 60 * 1000));
+    if (!adherenceByWeek[weekNum]) {
+      adherenceByWeek[weekNum] = {
+        week_number: weekNum,
+        total_days: 0,
+        workout_score: 0,
+        diet_score: 0
+      };
+    }
+    adherenceByWeek[weekNum].total_days++;
+    
+    // Calculate scores based on status
+    const workoutScore = {
+      'Completed': 100,
+      'Partial': 50,
+      'Skipped': 0
+    }[log.workout_status] || (log.workout_completed ? 100 : 0);
+    
+    const dietScore = {
+      'Followed': 100,
+      'Mostly': 70,
+      'Deviated': 0
+    }[log.diet_adherence] || (log.diet_followed ? 100 : 0);
+    
+    adherenceByWeek[weekNum].workout_score += workoutScore;
+    adherenceByWeek[weekNum].diet_score += dietScore;
+  });
+
+  const adherenceData = Object.values(adherenceByWeek)
+    .map(week => ({
+      week: `W${week.week_number}`,
+      workout: Math.round(week.workout_score / week.total_days),
+      diet: Math.round(week.diet_score / week.total_days)
+    }))
+    .sort((a, b) => parseInt(a.week.slice(1)) - parseInt(b.week.slice(1)))
+    .slice(-4); // Last 4 weeks
+
   return (
-    <div className="page-container bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900">
-      <div className="max-w-7xl mx-auto">
-        <div className="flex justify-between items-center mb-8 animate-slide-down">
-          <div>
-            <h1 className="text-5xl font-bold gradient-text mb-2">Dashboard</h1>
-            <p className="text-gray-400">Welcome back! Here's your fitness overview</p>
-          </div>
-          <div className="flex gap-3">
-            <button
-              onClick={() => navigate('/profile')}
-              className="group relative px-6 py-3 bg-gradient-to-r from-cyan-500 to-sky-500 text-white font-bold rounded-xl shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 overflow-hidden"
-            >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-sky-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              <span className="relative flex items-center gap-2">
-                <span className="text-xl">✏️</span>
-                <span>Edit Profile</span>
-              </span>
-            </button>
-            <button
-              onClick={handleLogout}
-              className="group relative px-6 py-3 bg-gradient-to-r from-red-500 to-rose-500 text-white font-bold rounded-xl shadow-lg hover:shadow-red-500/50 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 overflow-hidden"
-            >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-rose-500 to-red-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
-              <span className="relative flex items-center gap-2">
-                <span className="text-xl">🚪</span>
-                <span>Logout</span>
-              </span>
-            </button>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
+      {/* Sidebar */}
+      <div className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white p-6 shadow-2xl z-50">
+        {/* Logo */}
+        <div className="mb-12">
+          <h1 className="text-4xl font-bold mb-2">
+            <span className="text-white">Fit</span>
+            <span className="text-teal-400">🤖</span>
+            <span className="text-white">Ai</span>
+          </h1>
         </div>
-      
-        {/* Profile Summary Card */}
-        {profile && (
-          <div className="card-gradient p-8 mb-8 animate-scale-in">
-            <div className="flex justify-between items-start">
-              <div className="flex-1">
-                <h2 className="text-3xl font-bold text-gray-800 mb-6 flex items-center gap-2">
-                  <span className="text-4xl">👤</span>
-                  Your Profile
-                </h2>
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                  <div className="bg-white bg-opacity-60 p-4 rounded-xl hover:bg-opacity-80 transition-all">
-                    <span className="text-gray-600 text-sm block mb-1">Age</span>
-                    <span className="text-2xl font-bold text-blue-600">{profile.age}</span>
-                    <span className="text-gray-500 text-sm ml-1">years</span>
-                  </div>
-                  <div className="bg-white bg-opacity-60 p-4 rounded-xl hover:bg-opacity-80 transition-all">
-                    <span className="text-gray-600 text-sm block mb-1">Weight</span>
-                    <span className="text-2xl font-bold text-purple-600">{profile.weight_kg}</span>
-                    <span className="text-gray-500 text-sm ml-1">kg</span>
-                  </div>
-                  <div className="bg-white bg-opacity-60 p-4 rounded-xl hover:bg-opacity-80 transition-all">
-                    <span className="text-gray-600 text-sm block mb-1">Goal</span>
-                    <span className="text-lg font-bold text-green-600">{profile.goal}</span>
-                  </div>
-                  <div className="bg-white bg-opacity-60 p-4 rounded-xl hover:bg-opacity-80 transition-all">
-                    <span className="text-gray-600 text-sm block mb-1">Target</span>
-                    <span className="text-2xl font-bold text-pink-600">{profile.target_weight_kg}</span>
-                    <span className="text-gray-500 text-sm ml-1">kg</span>
-                  </div>
-                  <div className="bg-white bg-opacity-60 p-4 rounded-xl hover:bg-opacity-80 transition-all">
-                    <span className="text-gray-600 text-sm block mb-1">Experience</span>
-                    <span className="text-lg font-bold text-indigo-600">{profile.experience_level}</span>
-                  </div>
-                  <div className="bg-white bg-opacity-60 p-4 rounded-xl hover:bg-opacity-80 transition-all">
-                    <span className="text-gray-600 text-sm block mb-1">Calories</span>
-                    <span className="text-2xl font-bold text-orange-600">{profile.daily_calorie_target}</span>
-                    <span className="text-gray-500 text-sm ml-1">kcal</span>
-                  </div>
-                  <div className="bg-white bg-opacity-60 p-4 rounded-xl hover:bg-opacity-80 transition-all">
-                    <span className="text-gray-600 text-sm block mb-1">Training Days</span>
-                    <span className="text-2xl font-bold text-teal-600">{profile.available_days_per_week}</span>
-                    <span className="text-gray-500 text-sm ml-1">/week</span>
-                  </div>
-                  <div className="bg-white bg-opacity-60 p-4 rounded-xl hover:bg-opacity-80 transition-all">
-                    <span className="text-gray-600 text-sm block mb-1">Diet</span>
-                    <span className="text-lg font-bold text-emerald-600">{profile.dietary_preferences || 'None'}</span>
-                  </div>
-                </div>
-              </div>
-              <button
-                onClick={() => navigate('/profile')}
-                className="ml-4 text-blue-500 hover:text-blue-600 text-sm font-semibold hover:scale-110 transition-transform"
-              >
-                Edit →
-              </button>
-            </div>
-          </div>
-        )}
-      
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Habit Score Card */}
-          <div className="stat-card bg-gradient-to-br from-cyan-500 to-sky-600 text-white animate-slide-up">
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold">Habit Score</h3>
-              <span className="text-4xl">🎯</span>
-            </div>
-            <div className="text-6xl font-bold mb-2">{habitScore?.habit_score || 0}</div>
-            <div className="text-blue-100 text-lg">out of 100</div>
-            <div className="mt-4 pt-4 border-t border-cyan-400">
-              <p className="text-cyan-100">🔥 Streak: <span className="font-bold text-white">{habitScore?.streak_count || 0} weeks</span></p>
-            </div>
-          </div>
+
+        {/* Navigation */}
+        <nav className="space-y-2">
+          <button
+            onClick={() => setActiveView('dashboard')}
+            className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+              activeView === 'dashboard'
+                ? 'bg-teal-500 text-white shadow-lg'
+                : 'text-gray-300 hover:bg-gray-700'
+            }`}
+          >
+            <span className="text-xl">🏠</span>
+            <span className="font-semibold">Dashboard</span>
+          </button>
           
-          {/* Drop-off Risk Card - Enhanced */}
-          <div 
-            onClick={() => setShowRiskDetails(true)}
-            className={`stat-card cursor-pointer ${
-            dropoffRisk?.risk_level === 'critical' ? 'bg-gradient-to-br from-red-600 to-red-700' :
-            dropoffRisk?.risk_level === 'high' ? 'bg-gradient-to-br from-orange-500 to-red-500' :
-            dropoffRisk?.risk_level === 'medium' ? 'bg-gradient-to-br from-amber-500 to-orange-500' :
-            'bg-gradient-to-br from-green-500 to-emerald-600'
-          } text-white animate-slide-up hover:scale-105 transition-transform`} style={{animationDelay: '0.1s'}}>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold">Status</h3>
-              <span className="text-4xl">
-                {dropoffRisk?.risk_level === 'critical' ? '🚨' :
-                 dropoffRisk?.risk_level === 'high' ? '⚠️' :
-                 dropoffRisk?.risk_level === 'medium' ? '⚡' :
-                 '✅'}
-              </span>
-            </div>
-            <p className="text-3xl font-bold mb-2">
-              {dropoffRisk?.risk_level === 'critical' ? 'Critical' :
-               dropoffRisk?.risk_level === 'high' ? 'At Risk' :
-               dropoffRisk?.risk_level === 'medium' ? 'Needs Focus' :
-               'On Track'}
-            </p>
-            <div className={
-              dropoffRisk?.risk_level === 'critical' ? 'text-red-100' :
-              dropoffRisk?.risk_level === 'high' ? 'text-orange-100' :
-              dropoffRisk?.risk_level === 'medium' ? 'text-amber-100' :
-              'text-green-100'
-            }>
-              {dropoffRisk?.at_risk ? 'Needs attention' : 'Keep it up!'}
-            </div>
-            
-            {/* Risk Score Bar */}
-            {dropoffRisk?.risk_score > 0 && (
-              <div className="mt-4 pt-4 border-t border-opacity-30 border-white">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-sm opacity-90">Risk Score</span>
-                  <span className="text-lg font-bold">{dropoffRisk.risk_score}/100</span>
-                </div>
-                <div className="w-full bg-white bg-opacity-20 rounded-full h-2">
-                  <div 
-                    className="bg-white rounded-full h-2 transition-all duration-500"
-                    style={{width: `${dropoffRisk.risk_score}%`}}
-                  ></div>
-                </div>
-              </div>
-            )}
-            
-            {/* Reasons */}
-            {dropoffRisk?.reasons?.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-opacity-30 border-white">
-                <p className="text-sm font-bold mb-2">Issues:</p>
-                {dropoffRisk.reasons.slice(0, 2).map((reason, idx) => (
-                  <p key={idx} className="text-sm opacity-90 mb-1">• {reason}</p>
-                ))}
-                {dropoffRisk.reasons.length > 2 && (
-                  <p className="text-xs opacity-75 mt-1">+{dropoffRisk.reasons.length - 2} more</p>
-                )}
-              </div>
-            )}
-            
-            {/* Positive Notes */}
-            {dropoffRisk?.positive_notes?.length > 0 && (
-              <div className="mt-4 pt-4 border-t border-opacity-30 border-white">
-                <p className="text-sm font-bold mb-2">Wins:</p>
-                {dropoffRisk.positive_notes.slice(0, 2).map((note, idx) => (
-                  <p key={idx} className="text-sm opacity-90 mb-1">✨ {note}</p>
-                ))}
-              </div>
-            )}
-            
-            <p className="text-xs opacity-75 mt-4 text-center">Click for details →</p>
-          </div>
-          
-          {/* Upcoming Workout Card */}
-          <div className="stat-card bg-gradient-to-br from-orange-500 to-amber-500 text-white animate-slide-up" style={{animationDelay: '0.2s'}}>
-            <div className="flex items-center justify-between mb-4">
-              <h3 className="text-xl font-bold">This Week's Focus</h3>
-              <span className="text-4xl">💪</span>
-            </div>
-            <p className="text-2xl font-bold mb-2">{workout?.workouts?.[0]?.type || 'Full Body'}</p>
-            <div className="text-orange-100">Week {workout?.week_number || 1}</div>
-            <div className="mt-4 pt-4 border-t border-orange-400">
-              <p className="text-orange-100">Ready to crush it!</p>
-            </div>
-          </div>
-        </div>
-      
-        {/* Progress Chart */}
-        {progress.length > 0 && (
-          <div className="card p-8 mb-8 animate-fade-in">
-            <div className="flex justify-between items-center mb-6">
-              <div>
-                <h3 className="text-2xl font-bold text-gray-800 flex items-center gap-2">
-                  <span className="text-3xl">📈</span>
-                  Weight Progress
-                </h3>
-                <p className="text-gray-600 mt-1">Track your journey over time</p>
-              </div>
-              <button
-                onClick={() => navigate('/progress')}
-                className="text-blue-500 hover:text-blue-600 font-semibold hover:scale-110 transition-transform"
-              >
-                View All Progress →
-              </button>
-            </div>
-            <div className="bg-gradient-to-br from-blue-50 to-purple-50 p-4 rounded-xl">
-              <ResponsiveContainer width="100%" height={300}>
-                <LineChart data={progress}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#e5e7eb" />
-                  <XAxis dataKey="week_number" stroke="#6b7280" />
-                  <YAxis stroke="#6b7280" />
-                  <Tooltip 
-                    contentStyle={{ 
-                      backgroundColor: 'rgba(255, 255, 255, 0.95)', 
-                      borderRadius: '12px',
-                      border: 'none',
-                      boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
-                    }} 
-                  />
-                  <Legend />
-                  <Line 
-                    type="monotone" 
-                    dataKey="weight_kg" 
-                    stroke="#3b82f6" 
-                    strokeWidth={3}
-                    name="Weight (kg)"
-                    dot={{ fill: '#3b82f6', r: 5 }}
-                    activeDot={{ r: 7 }}
-                  />
-                </LineChart>
-              </ResponsiveContainer>
-            </div>
-          </div>
-        )}
-      
-        {/* Quick Actions */}
-        <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
           <button
             onClick={() => navigate('/daily-log')}
-            className="bg-gradient-to-br from-cyan-500 to-sky-600 hover:from-cyan-600 hover:to-sky-700 text-white p-8 rounded-2xl shadow-lg hover:shadow-xl text-center font-bold transition-all transform hover:scale-105 hover:-translate-y-1 animate-scale-in"
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition-all"
           >
-            <div className="text-5xl mb-3 animate-bounce-subtle">📝</div>
-            <div className="text-xl">Daily Log</div>
-            <div className="text-sm opacity-80 mt-1">Track today</div>
+            <span className="text-xl">📝</span>
+            <span className="font-semibold">Daily Log</span>
           </button>
+          
           <button
             onClick={() => navigate('/workouts')}
-            className="bg-gradient-to-br from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white p-8 rounded-2xl shadow-lg hover:shadow-xl text-center font-bold transition-all transform hover:scale-105 hover:-translate-y-1 animate-scale-in"
-            style={{animationDelay: '0.05s'}}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition-all"
           >
-            <div className="text-5xl mb-3 animate-bounce-subtle">💪</div>
-            <div className="text-xl">Workouts</div>
-            <div className="text-sm opacity-80 mt-1">View your plan</div>
+            <span className="text-xl">💪</span>
+            <span className="font-semibold">Workouts</span>
           </button>
+          
           <button
             onClick={() => navigate('/diet')}
-            className="bg-gradient-to-br from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white p-8 rounded-2xl shadow-lg hover:shadow-xl text-center font-bold transition-all transform hover:scale-105 hover:-translate-y-1 animate-scale-in"
-            style={{animationDelay: '0.1s'}}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition-all"
           >
-            <div className="text-5xl mb-3 animate-bounce-subtle">🥗</div>
-            <div className="text-xl">Diet Plans</div>
-            <div className="text-sm opacity-80 mt-1">Nutrition guide</div>
+            <span className="text-xl">🥗</span>
+            <span className="font-semibold">Diet</span>
           </button>
+          
           <button
             onClick={() => navigate('/progress')}
-            className="bg-gradient-to-br from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white p-8 rounded-2xl shadow-lg hover:shadow-xl text-center font-bold transition-all transform hover:scale-105 hover:-translate-y-1 animate-scale-in"
-            style={{animationDelay: '0.15s'}}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition-all"
           >
-            <div className="text-5xl mb-3 animate-bounce-subtle">📊</div>
-            <div className="text-xl">Progress</div>
-            <div className="text-sm opacity-80 mt-1">Track metrics</div>
+            <span className="text-xl">📊</span>
+            <span className="font-semibold">Progress</span>
           </button>
+          
           <button
             onClick={() => navigate('/assistant')}
-            className="bg-gradient-to-br from-indigo-500 to-purple-600 hover:from-indigo-600 hover:to-purple-700 text-white p-8 rounded-2xl shadow-lg hover:shadow-xl text-center font-bold transition-all transform hover:scale-105 hover:-translate-y-1 animate-scale-in"
-            style={{animationDelay: '0.2s'}}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition-all"
           >
-            <div className="text-5xl mb-3 animate-bounce-subtle">🤖</div>
-            <div className="text-xl">AI Coach</div>
-            <div className="text-sm opacity-80 mt-1">Get guidance</div>
+            <span className="text-xl">🤖</span>
+            <span className="font-semibold">AI Coach</span>
+          </button>
+        </nav>
+
+        {/* Bottom Actions */}
+        <div className="absolute bottom-6 left-6 right-6 space-y-2">
+          <button
+            onClick={() => navigate('/profile')}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-gray-700 transition-all"
+          >
+            <span className="text-xl">⚙️</span>
+            <span className="font-semibold">Settings</span>
+          </button>
+          <button
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-gray-300 hover:bg-red-600 transition-all"
+          >
+            <span className="text-xl">🚪</span>
+            <span className="font-semibold">Logout</span>
           </button>
         </div>
       </div>
-      
-      {/* Risk Details Modal */}
-      {showRiskDetails && dropoffRisk && (
-        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4" onClick={() => setShowRiskDetails(false)}>
-          <div className="bg-slate-800 rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
-            {/* Header */}
-            <div className={`p-8 ${
-              dropoffRisk.risk_level === 'critical' ? 'bg-gradient-to-r from-red-600 to-red-700' :
-              dropoffRisk.risk_level === 'high' ? 'bg-gradient-to-r from-orange-500 to-red-500' :
-              dropoffRisk.risk_level === 'medium' ? 'bg-gradient-to-r from-amber-500 to-orange-500' :
-              'bg-gradient-to-r from-green-500 to-emerald-600'
-            } text-white rounded-t-2xl`}>
-              <div className="flex justify-between items-start mb-4">
-                <div className="flex items-center gap-4">
-                  <span className="text-6xl">
-                    {dropoffRisk.risk_level === 'critical' ? '🚨' :
-                     dropoffRisk.risk_level === 'high' ? '⚠️' :
-                     dropoffRisk.risk_level === 'medium' ? '⚡' :
-                     '✅'}
-                  </span>
-                  <div>
-                    <h2 className="text-4xl font-bold mb-2">
-                      {dropoffRisk.risk_level === 'critical' ? 'Critical Status' :
-                       dropoffRisk.risk_level === 'high' ? 'At Risk' :
-                       dropoffRisk.risk_level === 'medium' ? 'Needs Focus' :
-                       'On Track!'}
-                    </h2>
-                    <p className="text-lg opacity-90">Detailed Analysis & Recommendations</p>
-                  </div>
+
+      {/* Main Content */}
+      <div className="ml-64 p-8">
+        {/* Header */}
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">
+              {isReturningUser ? 'Welcome Back!' : 'Welcome!'}
+            </h1>
+            <p className="text-gray-600">
+              {user?.name || profile?.name || 'User'} • {new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <button className="p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+              <span className="text-xl">🔍</span>
+            </button>
+            <button className="p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+              <span className="text-xl">🔔</span>
+            </button>
+            <button className="p-3 bg-white rounded-xl shadow-sm hover:shadow-md transition-all">
+              <span className="text-xl">☰</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Measurement Reminder Notification */}
+        {measurementReminder?.reminder_due && (
+          <div className="mb-6 bg-gradient-to-r from-violet-500 to-purple-600 rounded-2xl p-6 text-white shadow-xl animate-slide-down">
+            <div className="flex items-start gap-4">
+              <div className="text-5xl animate-bounce-subtle">📏</div>
+              <div className="flex-1">
+                <h3 className="text-xl font-bold mb-2">Time to Update Your Measurements!</h3>
+                <p className="text-sm opacity-90 mb-3">
+                  It's been {measurementReminder.days_since_last} days since your last measurement. 
+                  Update your body measurements to track your progress beyond just weight.
+                </p>
+                <div className="flex gap-3">
+                  <button
+                    onClick={() => navigate('/profile')}
+                    className="px-6 py-2 bg-white text-violet-600 rounded-lg font-semibold hover:bg-gray-100 transition-all"
+                  >
+                    Update Measurements
+                  </button>
+                  <button
+                    onClick={() => setMeasurementReminder({ ...measurementReminder, reminder_due: false })}
+                    className="px-6 py-2 bg-white bg-opacity-20 hover:bg-opacity-30 rounded-lg font-semibold transition-all"
+                  >
+                    Remind Me Later
+                  </button>
                 </div>
-                <button
-                  onClick={() => setShowRiskDetails(false)}
-                  className="text-white hover:bg-white hover:bg-opacity-20 rounded-full p-2 transition-all"
-                >
-                  <span className="text-2xl">✕</span>
-                </button>
+              </div>
+              <button
+                onClick={() => setMeasurementReminder({ ...measurementReminder, reminder_due: false })}
+                className="text-white hover:bg-white hover:bg-opacity-20 rounded-lg p-2 transition-all"
+              >
+                <span className="text-xl">✕</span>
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Main Grid */}
+        <div className="grid grid-cols-4 gap-6">
+          {/* Left Column */}
+          <div className="space-y-6">
+            {/* Daily Motivation Card - NEW */}
+            <div className={`bg-gradient-to-br ${dailyMotivation.color} rounded-3xl p-6 text-white shadow-xl transform hover:scale-105 transition-all duration-300`}>
+              <div className="flex items-start gap-4 mb-4">
+                <div className="text-5xl animate-bounce-subtle">{dailyMotivation.icon}</div>
+                <div className="flex-1">
+                  <h3 className="text-xl font-bold mb-2">{dailyMotivation.title}</h3>
+                  <p className="text-sm leading-relaxed opacity-95">
+                    {dailyMotivation.message}
+                  </p>
+                </div>
               </div>
               
-              {/* Risk Score */}
-              <div className="bg-white bg-opacity-20 rounded-xl p-4">
-                <div className="flex justify-between items-center mb-2">
-                  <span className="text-lg font-semibold">Risk Score</span>
-                  <span className="text-3xl font-bold">{dropoffRisk.risk_score}/100</span>
+              {/* Progress indicator */}
+              {!todayWorkout?.rest_day && !todayLog?.workout_completed && (
+                <div className="mt-4 pt-4 border-t border-white border-opacity-30">
+                  <div className="flex justify-between items-center text-sm mb-2">
+                    <span className="opacity-90">Today's Progress</span>
+                    <span className="font-bold">{completionPercentage}%</span>
+                  </div>
+                  <div className="w-full bg-white bg-opacity-20 rounded-full h-2">
+                    <div 
+                      className="bg-white rounded-full h-2 transition-all duration-500"
+                      style={{width: `${completionPercentage}%`}}
+                    ></div>
+                  </div>
                 </div>
-                <div className="w-full bg-white bg-opacity-30 rounded-full h-3">
-                  <div 
-                    className="bg-white rounded-full h-3 transition-all duration-500"
-                    style={{width: `${dropoffRisk.risk_score}%`}}
+              )}
+              
+              {todayLog?.workout_completed && (
+                <div className="mt-4 pt-4 border-t border-white border-opacity-30 flex items-center justify-center gap-2">
+                  <span className="text-2xl">✅</span>
+                  <span className="font-semibold">Workout Completed!</span>
+                </div>
+              )}
+            </div>
+
+            {/* Daily Activity Card */}
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-6 text-white shadow-xl">
+              <h3 className="text-lg font-semibold mb-6">Daily Activity</h3>
+              
+              {/* Circular Progress */}
+              <div className="relative w-48 h-48 mx-auto mb-6">
+                <svg className="transform -rotate-90 w-48 h-48">
+                  <circle
+                    cx="96"
+                    cy="96"
+                    r="88"
+                    stroke="#374151"
+                    strokeWidth="12"
+                    fill="none"
+                  />
+                  <circle
+                    cx="96"
+                    cy="96"
+                    r="88"
+                    stroke="url(#gradient)"
+                    strokeWidth="12"
+                    fill="none"
+                    strokeDasharray={`${completionPercentage * 5.53} 553`}
+                    strokeLinecap="round"
+                    className="transition-all duration-1000"
+                  />
+                  <defs>
+                    <linearGradient id="gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="#14b8a6" />
+                      <stop offset="100%" stopColor="#f97316" />
+                    </linearGradient>
+                  </defs>
+                </svg>
+                <div className="absolute inset-0 flex flex-col items-center justify-center">
+                  <div className="text-5xl font-bold">{completionPercentage}%</div>
+                  <div className="text-sm text-gray-400">Complete</div>
+                </div>
+              </div>
+
+              {/* Stats - REAL DATA FROM DAILY LOGS */}
+              <div className="grid grid-cols-2 gap-4 text-sm">
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-teal-400"></div>
+                    <span className="text-gray-400">Workouts</span>
+                  </div>
+                  <div className="text-xl font-bold">{weeklyWorkouts}/7</div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-blue-400"></div>
+                    <span className="text-gray-400">Avg Calories</span>
+                  </div>
+                  <div className="text-xl font-bold">{avgCalories}</div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-teal-400"></div>
+                    <span className="text-gray-400">Water (L)</span>
+                  </div>
+                  <div className="text-xl font-bold">{avgWaterIntake}</div>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-orange-400"></div>
+                    <span className="text-gray-400">Sleep (hrs)</span>
+                  </div>
+                  <div className="text-xl font-bold">{avgSleep}</div>
+                </div>
+              </div>
+
+              {/* Progress Dots */}
+              <div className="flex justify-center gap-2 mt-6">
+                {[...Array(5)].map((_, i) => (
+                  <div
+                    key={i}
+                    className={`w-2 h-2 rounded-full ${
+                      i === 0 ? 'bg-teal-400' : 'bg-gray-600'
+                    }`}
                   ></div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Middle Column - SPANS 2 COLUMNS */}
+          <div className="col-span-2 space-y-6">
+            {/* Today's Workout Card - REAL DATA WITH EXERCISE CAROUSEL */}
+            <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
+              <div className="relative z-10">
+                {/* Header */}
+                <div className="flex justify-between items-start mb-4">
+                  <div>
+                    <h3 className="text-lg font-semibold mb-1">
+                      {todayWorkout?.rest_day ? 'Rest Day' : `Today's ${todayWorkout?.type || 'Workout'}`}
+                    </h3>
+                    <p className="text-sm text-gray-400">
+                      {todayWorkout?.day_name || 'No workout'} - Week {workout?.week_number || 1}
+                    </p>
+                  </div>
+                  <button 
+                    onClick={() => navigate('/workouts')}
+                    className="p-2 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all"
+                  >
+                    <span className="text-xl">📋</span>
+                  </button>
+                </div>
+
+                {/* Exercise Carousel - SWIPEABLE */}
+                {todayExercises.length > 0 ? (
+                  <>
+                    <div className="bg-white bg-opacity-10 rounded-xl p-4 mb-3 backdrop-blur-sm min-h-[120px]">
+                      <div className="flex items-start gap-3">
+                        <div className="text-3xl">💪</div>
+                        <div className="flex-1">
+                          <div className="text-base font-bold mb-2">
+                            {todayExercises[currentExerciseIndex].name}
+                          </div>
+                          <div className="grid grid-cols-3 gap-2 mb-2">
+                            <div className="bg-white bg-opacity-10 rounded-lg p-2 text-center">
+                              <div className="text-xs text-gray-400">Sets</div>
+                              <div className="text-lg font-bold">{todayExercises[currentExerciseIndex].sets}</div>
+                            </div>
+                            <div className="bg-white bg-opacity-10 rounded-lg p-2 text-center">
+                              <div className="text-xs text-gray-400">Reps</div>
+                              <div className="text-lg font-bold">{todayExercises[currentExerciseIndex].reps}</div>
+                            </div>
+                            <div className="bg-white bg-opacity-10 rounded-lg p-2 text-center">
+                              <div className="text-xs text-gray-400">Rest</div>
+                              <div className="text-lg font-bold">{todayExercises[currentExerciseIndex].rest_seconds}s</div>
+                            </div>
+                          </div>
+                          <div className="text-xs text-gray-300 line-clamp-2">
+                            {todayExercises[currentExerciseIndex].guidance}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Navigation Controls */}
+                    <div className="flex items-center justify-between">
+                      <button
+                        onClick={() => setCurrentExerciseIndex(prev => 
+                          prev > 0 ? prev - 1 : todayExercises.length - 1
+                        )}
+                        disabled={todayExercises.length <= 1}
+                        className="p-2 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                      >
+                        <span className="text-xl">←</span>
+                      </button>
+                      
+                      <div className="flex items-center gap-2">
+                        <span className="text-sm text-gray-400">
+                          Exercise {currentExerciseIndex + 1} of {todayExercises.length}
+                        </span>
+                        <div className="flex gap-1">
+                          {todayExercises.map((_, idx) => (
+                            <div
+                              key={idx}
+                              className={`w-2 h-2 rounded-full transition-all ${
+                                idx === currentExerciseIndex ? 'bg-teal-400 w-4' : 'bg-gray-600'
+                              }`}
+                            ></div>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <button
+                        onClick={() => setCurrentExerciseIndex(prev => 
+                          prev < todayExercises.length - 1 ? prev + 1 : 0
+                        )}
+                        disabled={todayExercises.length <= 1}
+                        className="p-2 bg-white bg-opacity-10 rounded-lg hover:bg-opacity-20 transition-all disabled:opacity-30 disabled:cursor-not-allowed"
+                      >
+                        <span className="text-xl">→</span>
+                      </button>
+                    </div>
+                  </>
+                ) : (
+                  <div className="bg-white bg-opacity-10 rounded-xl p-6 text-center backdrop-blur-sm">
+                    <div className="text-5xl mb-3">🛌</div>
+                    <div className="text-lg font-semibold mb-1">Rest & Recovery</div>
+                    <div className="text-sm text-gray-400">
+                      {todayWorkout?.rest_day 
+                        ? 'Take it easy today - your body needs rest!' 
+                        : 'No workout scheduled for today'}
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Background Icon */}
+              <div className="absolute right-0 top-0 w-48 h-full opacity-10 flex items-center justify-center">
+                <div className="text-9xl">💪</div>
+              </div>
+            </div>
+
+            {/* Performance Metrics - REAL DATA FROM DAILY LOGS */}
+            <div className="bg-white border-2 border-gray-200 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                  <span className="text-2xl">📊</span>
+                  Weekly Activity
+                </h3>
+                <div className="flex gap-2">
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full bg-teal-500"></div>
+                    <span className="text-xs text-gray-600">Calories</span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <div className="w-3 h-3 rounded-full bg-orange-500"></div>
+                    <span className="text-xs text-gray-600">Sleep</span>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="h-56 bg-gradient-to-br from-gray-50 to-blue-50 rounded-xl p-4">
+                <ResponsiveContainer width="100%" height="100%">
+                  <LineChart data={performanceData}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" vertical={false} />
+                    <XAxis 
+                      dataKey="day" 
+                      stroke="#64748b"
+                      tick={{ fontSize: 12, fill: '#475569' }}
+                      axisLine={{ stroke: '#cbd5e1' }}
+                    />
+                    <YAxis 
+                      stroke="#64748b"
+                      tick={{ fontSize: 12, fill: '#475569' }}
+                      axisLine={{ stroke: '#cbd5e1' }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                        borderRadius: '12px',
+                        border: '2px solid #e2e8f0',
+                        boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+                        padding: '12px'
+                      }}
+                      labelStyle={{ 
+                        color: '#1e293b', 
+                        fontWeight: 'bold',
+                        marginBottom: '8px'
+                      }}
+                      itemStyle={{ 
+                        color: '#475569',
+                        padding: '4px 0'
+                      }}
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="calories"
+                      stroke="#14b8a6"
+                      strokeWidth={3}
+                      dot={{ fill: '#14b8a6', r: 5, strokeWidth: 2, stroke: '#fff' }}
+                      activeDot={{ r: 7, strokeWidth: 2 }}
+                      name="Calories"
+                    />
+                    <Line
+                      type="monotone"
+                      dataKey="sleep"
+                      stroke="#f97316"
+                      strokeWidth={3}
+                      dot={{ fill: '#f97316', r: 5, strokeWidth: 2, stroke: '#fff' }}
+                      activeDot={{ r: 7, strokeWidth: 2 }}
+                      name="Sleep (hrs)"
+                    />
+                  </LineChart>
+                </ResponsiveContainer>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4 mt-4">
+                <div className="bg-gradient-to-br from-teal-50 to-cyan-50 border border-teal-200 rounded-xl p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-teal-500"></div>
+                    <span className="text-xs text-gray-600 font-semibold">Average Calories</span>
+                  </div>
+                  <div className="text-2xl font-bold text-teal-700">{avgCalories}</div>
+                  <div className="text-xs text-gray-500">kcal per day</div>
+                </div>
+                <div className="bg-gradient-to-br from-orange-50 to-amber-50 border border-orange-200 rounded-xl p-3">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className="w-2 h-2 rounded-full bg-orange-500"></div>
+                    <span className="text-xs text-gray-600 font-semibold">Average Sleep</span>
+                  </div>
+                  <div className="text-2xl font-bold text-orange-700">{avgSleep}</div>
+                  <div className="text-xs text-gray-500">hours per night</div>
                 </div>
               </div>
             </div>
-            
-            {/* Content */}
-            <div className="p-8 space-y-6">
-              {/* Positive Notes */}
-              {dropoffRisk.positive_notes?.length > 0 && (
-                <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 border-2 border-green-500/50 rounded-xl p-6">
-                  <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                    <span className="text-3xl">🌟</span>
-                    What's Going Well
-                  </h3>
-                  <div className="space-y-2">
-                    {dropoffRisk.positive_notes.map((note, idx) => (
-                      <div key={idx} className="flex items-start gap-3 text-gray-200">
-                        <span className="text-green-400 text-xl mt-1">✓</span>
-                        <p className="text-lg">{note}</p>
+
+            {/* This Week's Focus and Weekly Adherence - SIDE BY SIDE */}
+            <div className="grid grid-cols-2 gap-6">
+              {/* This Week's Focus - REAL DATA FROM WORKOUT PLAN */}
+              <div className="bg-white rounded-3xl p-6 shadow-xl">
+                <h3 className="text-lg font-semibold text-gray-900 mb-4">This Week's Focus</h3>
+                <p className="text-sm text-gray-500 mb-4">{workout?.week_summary || 'Track your workout progress'}</p>
+                
+                <div className="space-y-3">
+                  {workout?.workouts?.slice(0, 3).filter(w => !w.rest_day).map((day, idx) => (
+                    <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-teal-400 to-teal-600 rounded-xl flex items-center justify-center">
+                          <span className="text-xl">💪</span>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">{day.day_name}</div>
+                          <div className="text-xs text-gray-500">{day.type}</div>
+                        </div>
                       </div>
-                    ))}
-                  </div>
+                      <div className="text-sm text-gray-600">{day.exercises?.length || 0} exercises</div>
+                    </div>
+                  ))}
                 </div>
-              )}
-              
-              {/* Issues */}
-              {dropoffRisk.reasons?.length > 0 && (
-                <div className="bg-gradient-to-br from-red-500/20 to-orange-500/20 border-2 border-red-500/50 rounded-xl p-6">
-                  <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                    <span className="text-3xl">⚠️</span>
-                    Areas Needing Attention
+              </div>
+
+              {/* Weekly Adherence Chart */}
+              <div className="bg-white border-2 border-gray-200 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-shadow duration-300">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
+                    <span className="text-2xl">✅</span>
+                    Weekly Adherence
                   </h3>
-                  <div className="space-y-2">
-                    {dropoffRisk.reasons.map((reason, idx) => (
-                      <div key={idx} className="flex items-start gap-3 text-gray-200">
-                        <span className="text-red-400 text-xl mt-1">•</span>
-                        <p className="text-lg">{reason}</p>
-                      </div>
-                    ))}
-                  </div>
+                  <button
+                    onClick={() => navigate('/progress')}
+                    className="text-xs text-violet-600 hover:text-violet-700 font-semibold flex items-center gap-1"
+                  >
+                    View All
+                    <span>→</span>
+                  </button>
                 </div>
-              )}
-              
-              {/* Recommendations */}
-              {dropoffRisk.recommendations?.length > 0 && (
-                <div className="bg-gradient-to-br from-cyan-500/20 to-sky-500/20 border-2 border-cyan-500/50 rounded-xl p-6">
-                  <h3 className="text-2xl font-bold text-white mb-4 flex items-center gap-2">
-                    <span className="text-3xl">💡</span>
-                    Action Plan
-                  </h3>
-                  <div className="space-y-3">
-                    {dropoffRisk.recommendations.map((rec, idx) => (
-                      <div key={idx} className="flex items-start gap-3 bg-slate-700/50 rounded-lg p-4 hover:bg-slate-700 transition-all">
-                        <span className="text-cyan-400 text-2xl font-bold">{idx + 1}</span>
-                        <p className="text-lg text-gray-200">{rec}</p>
+                
+                {adherenceData.length > 0 ? (
+                  <>
+                    <div className="h-48 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-4">
+                      <ResponsiveContainer width="100%" height="100%">
+                        <BarChart data={adherenceData}>
+                          <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" vertical={false} />
+                          <XAxis 
+                            dataKey="week" 
+                            stroke="#64748b"
+                            tick={{ fontSize: 12, fill: '#475569' }}
+                            axisLine={{ stroke: '#cbd5e1' }}
+                          />
+                          <YAxis 
+                            stroke="#64748b"
+                            tick={{ fontSize: 12, fill: '#475569' }}
+                            axisLine={{ stroke: '#cbd5e1' }}
+                            domain={[0, 100]}
+                          />
+                          <Tooltip
+                            contentStyle={{
+                              backgroundColor: 'rgba(255, 255, 255, 0.98)',
+                              borderRadius: '12px',
+                              border: '2px solid #e2e8f0',
+                              boxShadow: '0 10px 25px rgba(0, 0, 0, 0.15)',
+                              padding: '12px'
+                            }}
+                            labelStyle={{ 
+                              color: '#1e293b', 
+                              fontWeight: 'bold',
+                              marginBottom: '8px'
+                            }}
+                          />
+                          <Legend 
+                            wrapperStyle={{ fontSize: '12px' }}
+                            iconType="circle"
+                          />
+                          <Bar 
+                            dataKey="workout" 
+                            fill="#06b6d4" 
+                            name="Workout %" 
+                            radius={[8, 8, 0, 0]}
+                          />
+                          <Bar 
+                            dataKey="diet" 
+                            fill="#10b981" 
+                            name="Diet %" 
+                            radius={[8, 8, 0, 0]}
+                          />
+                        </BarChart>
+                      </ResponsiveContainer>
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-3 mt-4">
+                      <div className="bg-gradient-to-br from-cyan-50 to-blue-50 border border-cyan-200 rounded-xl p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="w-2 h-2 rounded-full bg-cyan-500"></div>
+                          <span className="text-xs text-gray-600 font-semibold">Workout</span>
+                        </div>
+                        <div className="text-2xl font-bold text-cyan-700">
+                          {adherenceData.length > 0 ? Math.round(adherenceData.reduce((sum, d) => sum + d.workout, 0) / adherenceData.length) : 0}%
+                        </div>
+                        <div className="text-xs text-gray-500">avg adherence</div>
                       </div>
-                    ))}
+                      <div className="bg-gradient-to-br from-emerald-50 to-green-50 border border-emerald-200 rounded-xl p-3">
+                        <div className="flex items-center gap-2 mb-1">
+                          <div className="w-2 h-2 rounded-full bg-emerald-500"></div>
+                          <span className="text-xs text-gray-600 font-semibold">Diet</span>
+                        </div>
+                        <div className="text-2xl font-bold text-emerald-700">
+                          {adherenceData.length > 0 ? Math.round(adherenceData.reduce((sum, d) => sum + d.diet, 0) / adherenceData.length) : 0}%
+                        </div>
+                        <div className="text-xs text-gray-500">avg adherence</div>
+                      </div>
+                    </div>
+                  </>
+                ) : (
+                  <div className="text-center py-8 bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl">
+                    <p className="text-4xl mb-2">✅</p>
+                    <p className="text-gray-700 text-sm mb-3">No adherence data yet</p>
+                    <button
+                      onClick={() => navigate('/daily-log')}
+                      className="text-xs px-4 py-2 bg-gradient-to-r from-emerald-500 to-green-500 text-white font-semibold rounded-lg hover:shadow-lg transition-all"
+                    >
+                      Start Logging
+                    </button>
                   </div>
-                </div>
-              )}
-              
-              {/* Quick Actions */}
-              <div className="grid grid-cols-2 gap-4 pt-4">
-                <button
-                  onClick={() => { setShowRiskDetails(false); navigate('/daily-log'); }}
-                  className="bg-gradient-to-r from-cyan-500 to-sky-500 text-white font-bold py-4 rounded-xl hover:shadow-lg hover:shadow-cyan-500/50 transition-all transform hover:scale-105"
-                >
-                  <span className="text-2xl mr-2">📝</span>
-                  Log Today
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column */}
+          <div className="space-y-6">
+            {/* AI Coach Insights - REAL DATA FROM DROPOFF RISK */}
+            <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-3xl p-6 text-white shadow-xl">
+              <div className="flex items-start justify-between mb-4">
+                <h3 className="text-lg font-semibold">AI Coach Insights</h3>
+                <button className="p-2 bg-white bg-opacity-20 rounded-lg hover:bg-opacity-30 transition-all">
+                  <span className="text-xl">💡</span>
                 </button>
-                <button
-                  onClick={() => { setShowRiskDetails(false); navigate('/assistant'); }}
-                  className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-bold py-4 rounded-xl hover:shadow-lg hover:shadow-purple-500/50 transition-all transform hover:scale-105"
-                >
-                  <span className="text-2xl mr-2">🤖</span>
-                  Talk to AI Coach
-                </button>
+              </div>
+              
+              <p className="text-sm mb-4 leading-relaxed">
+                {dropoffRisk?.positive_notes?.[0] || dropoffRisk?.recommendations?.[0] || 'Keep up the great work! Your consistency is improving.'}
+              </p>
+
+              {dropoffRisk?.risk_score > 0 && (
+                <>
+                  <div className="w-full bg-white bg-opacity-20 rounded-full h-2 mb-2">
+                    <div 
+                      className="bg-white rounded-full h-2 transition-all duration-500"
+                      style={{width: `${100 - dropoffRisk.risk_score}%`}}
+                    ></div>
+                  </div>
+                  <div className="text-xs text-white opacity-75 mb-4">
+                    Progress Score: {100 - dropoffRisk.risk_score}%
+                  </div>
+                </>
+              )}
+
+              <button 
+                onClick={() => navigate('/assistant')}
+                className="mt-4 w-full bg-white bg-opacity-20 hover:bg-opacity-30 rounded-xl py-3 font-semibold transition-all"
+              >
+                Talk to AI Coach →
+              </button>
+            </div>
+
+            {/* Recent Progress - REAL DATA */}
+            <div className="bg-white rounded-3xl p-6 shadow-xl">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
+              
+              <div className="space-y-3">
+                {recentLogs.slice(-3).reverse().map((log, idx) => {
+                  const logDate = new Date(log.date);
+                  const dateStr = logDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                  
+                  return (
+                    <div key={idx} className="flex items-center justify-between p-3 bg-gray-50 rounded-xl">
+                      <div className="flex items-center gap-3">
+                        <div className={`w-10 h-10 rounded-xl flex items-center justify-center ${
+                          log.workout_completed && log.diet_followed 
+                            ? 'bg-green-100' 
+                            : log.workout_completed || log.diet_followed
+                            ? 'bg-yellow-100'
+                            : 'bg-gray-100'
+                        }`}>
+                          <span className="text-xl">
+                            {log.workout_completed && log.diet_followed ? '✅' : 
+                             log.workout_completed ? '💪' : 
+                             log.diet_followed ? '🥗' : '📝'}
+                          </span>
+                        </div>
+                        <div>
+                          <div className="font-semibold text-gray-900">{dateStr}</div>
+                          <div className="text-xs text-gray-500">
+                            {log.workout_completed ? 'Workout ✓ ' : ''}
+                            {log.diet_followed ? 'Diet ✓' : ''}
+                            {!log.workout_completed && !log.diet_followed ? 'No activity' : ''}
+                          </div>
+                        </div>
+                      </div>
+                      {log.weight_kg && (
+                        <div className="text-sm text-gray-600">{log.weight_kg} kg</div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              
+              <button
+                onClick={() => navigate('/daily-log')}
+                className="mt-4 w-full bg-gradient-to-r from-violet-500 to-purple-600 text-white py-3 rounded-xl font-semibold hover:shadow-lg transition-all"
+              >
+                Log Today's Activity
+              </button>
+            </div>
+
+            {/* Quick Stats */}
+            <div className="bg-white rounded-3xl p-6 shadow-xl">
+              <h3 className="text-lg font-semibold text-gray-900 mb-4">This Week</h3>
+              
+              <div className="space-y-4">
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-violet-100 rounded-xl flex items-center justify-center">
+                      <span className="text-xl">🎯</span>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">Habit Score</div>
+                      <div className="text-lg font-bold text-gray-900">{habitScore?.habit_score || 0}/100</div>
+                    </div>
+                  </div>
+                  <div className="text-green-600 text-sm font-semibold">+5%</div>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center">
+                      <span className="text-xl">💪</span>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">Workouts</div>
+                      <div className="text-lg font-bold text-gray-900">{weeklyWorkouts}/7</div>
+                    </div>
+                  </div>
+                  <div className="text-green-600 text-sm font-semibold">On track</div>
+                </div>
+
+                <div className="flex justify-between items-center">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-orange-100 rounded-xl flex items-center justify-center">
+                      <span className="text-xl">🔥</span>
+                    </div>
+                    <div>
+                      <div className="text-sm text-gray-600">Streak</div>
+                      <div className="text-lg font-bold text-gray-900">{habitScore?.streak_count || 0} weeks</div>
+                    </div>
+                  </div>
+                  <div className="text-green-600 text-sm font-semibold">Amazing!</div>
+                </div>
               </div>
             </div>
           </div>
         </div>
-      )}
+      </div>
     </div>
   );
 };

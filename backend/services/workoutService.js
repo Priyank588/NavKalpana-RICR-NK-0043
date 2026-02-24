@@ -5,6 +5,7 @@ import { generateWeeklyWorkout } from '../utils/workoutGenerator.js';
 import { generateAIWorkoutPlan } from './groqService.js';
 import { getWeekExercises, calculateProgressiveOverload } from './exerciseLogService.js';
 import Profile from '../models/Profile.js';
+import { checkRecoveryNeeded, adjustWorkoutForRecovery } from './recoveryService.js';
 
 export const generateWorkoutPlan = async (user_id, week_number = 1) => {
   // Get user profile for goal and experience level
@@ -154,11 +155,22 @@ export const generateWorkoutPlan = async (user_id, week_number = 1) => {
 };
 
 export const getLatestWorkoutPlan = async (user_id) => {
-  const workoutPlan = await WorkoutPlan.findOne({ user_id }).sort({ created_at: -1 });
+  let workoutPlan = await WorkoutPlan.findOne({ user_id }).sort({ created_at: -1 });
   
   if (!workoutPlan) {
     // Generate first week plan if none exists
-    return await generateWorkoutPlan(user_id, 1);
+    workoutPlan = await generateWorkoutPlan(user_id, 1);
+  }
+  
+  // Check recovery status and adjust workout if needed
+  try {
+    const recoveryStatus = await checkRecoveryNeeded(user_id);
+    if (recoveryStatus.recovery_needed || recoveryStatus.current_energy === 'Very Tired' || recoveryStatus.current_energy === 'Slightly Fatigued') {
+      workoutPlan = await adjustWorkoutForRecovery(user_id, workoutPlan, recoveryStatus);
+    }
+  } catch (error) {
+    console.error('Error checking recovery status:', error);
+    // Continue with original workout plan if recovery check fails
   }
   
   return workoutPlan;

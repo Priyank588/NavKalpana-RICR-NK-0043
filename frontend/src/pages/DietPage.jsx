@@ -43,26 +43,26 @@ export const DietPage = () => {
   };
 
   if (loading) return (
-    <div className="page-container bg-gradient-to-br from-slate-900 via-emerald-900 to-slate-800 flex items-center justify-center">
+    <div className="page-container flex items-center justify-center">
       <div className="text-center">
         <div className="text-7xl mb-4 animate-bounce-subtle">⏳</div>
-        <p className="text-2xl font-bold text-gray-800">Loading...</p>
+        <p className="text-2xl font-bold text-gray-900">Loading...</p>
       </div>
     </div>
   );
 
   return (
-    <div className="page-container bg-gradient-to-br from-slate-900 via-emerald-900 to-slate-800">
+    <div className="page-container">
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8 animate-slide-down">
           <div>
             <h1 className="text-5xl font-bold gradient-text mb-2">🥗 Diet Plan</h1>
-            <p className="text-gray-400">Your personalized nutrition program</p>
+            <p className="text-gray-600">Your personalized nutrition program</p>
           </div>
           <div className="flex gap-3">
             <button
               onClick={() => navigate('/dashboard')}
-              className="group relative px-6 py-3 bg-slate-800/50 backdrop-blur-sm border-2 border-slate-700 text-white font-bold rounded-xl hover:bg-slate-700/50 hover:border-emerald-500/50 transition-all duration-300 transform hover:scale-105 overflow-hidden"
+              className="group relative px-6 py-3 bg-white border-2 border-gray-200 text-gray-900 font-bold rounded-xl hover:bg-gray-50 hover:border-violet-300 transition-all duration-300 transform hover:scale-105 overflow-hidden shadow-sm"
             >
               <span className="relative flex items-center gap-2">
                 <span className="text-xl">🏠</span>
@@ -103,10 +103,10 @@ export const DietPage = () => {
         </div>
 
         {!dietPlan ? (
-          <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-12 text-center animate-scale-in">
+          <div className="card p-12 text-center animate-scale-in">
             <div className="text-8xl mb-6 animate-bounce-subtle">🥗</div>
-            <h2 className="text-3xl font-bold text-white mb-4">No Diet Plan Yet</h2>
-            <p className="text-gray-300 text-lg mb-8">Generate your first AI-powered nutrition plan tailored to your goals!</p>
+            <h2 className="text-3xl font-bold text-gray-900 mb-4">No Diet Plan Yet</h2>
+            <p className="text-gray-700 text-lg mb-8">Generate your first AI-powered nutrition plan tailored to your goals!</p>
             <button
               onClick={generateNewDiet}
               disabled={generating}
@@ -132,21 +132,21 @@ export const DietPage = () => {
           <>
             {/* Week Summary - AI Generated */}
             {dietPlan.week_summary && (
-              <div className="glass-effect bg-gradient-to-r from-green-500 to-teal-600 text-white p-8 mb-8 animate-slide-up">
+              <div className="bg-white border-2 border-green-200 rounded-2xl p-8 mb-8 animate-slide-up shadow-lg">
                 <div className="flex items-center gap-3 mb-4">
                   <span className="text-5xl">🎯</span>
                   <div>
-                    <h2 className="text-3xl font-bold">Week {dietPlan.week_number} Nutrition Focus</h2>
-                    <p className="text-green-100">Your dietary strategy this week</p>
+                    <h2 className="text-3xl font-bold text-gray-900">Week {dietPlan.week_number} Nutrition Focus</h2>
+                    <p className="text-green-600 font-semibold">Your dietary strategy this week</p>
                   </div>
                 </div>
-                <p className="text-xl leading-relaxed">{dietPlan.week_summary}</p>
+                <p className="text-xl leading-relaxed text-gray-800">{dietPlan.week_summary}</p>
               </div>
             )}
             
             {/* Daily Targets */}
-            <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 mb-8 animate-scale-in">
-              <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-2">
+            <div className="card p-8 mb-8 animate-scale-in">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                 <span className="text-4xl">🎯</span>
                 Daily Targets
               </h2>
@@ -177,35 +177,35 @@ export const DietPage = () => {
             {/* Meals */}
             <div className="space-y-6 mb-8">
               {dietPlan.meals.map((meal, idx) => (
-                <div key={idx} className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-8 hover:shadow-xl hover:shadow-emerald-500/10 transition-all animate-scale-in" style={{animationDelay: `${idx * 0.1}s`}}>
+                <div key={idx} className="card p-8 hover:shadow-xl transition-all animate-scale-in" style={{animationDelay: `${idx * 0.1}s`}}>
                   <div className="flex justify-between items-start mb-6">
                     <div className="flex-1">
                       <div className="flex items-center gap-4 mb-3">
                         <span className="text-5xl">{['🌅', '☀️', '🌤️', '🌙'][idx] || '🍽️'}</span>
                         <div>
-                          <h3 className="text-3xl font-bold text-white">
+                          <h3 className="text-3xl font-bold text-gray-900">
                             {meal.meal_name}
                           </h3>
                           {meal.time_suggestion && (
-                            <span className="text-sm bg-gradient-to-r from-cyan-500 to-sky-600 text-white px-4 py-1 rounded-full inline-block mt-1">
+                            <span className="text-sm bg-gradient-to-r from-blue-500 to-indigo-600 text-white px-4 py-1 rounded-full inline-block mt-1">
                               ⏰ {meal.time_suggestion}
                             </span>
                           )}
                         </div>
                       </div>
-                      <p className="text-gray-300 text-lg mb-4 leading-relaxed">{meal.description}</p>
+                      <p className="text-gray-700 text-lg mb-4 leading-relaxed">{meal.description}</p>
                       
                       {/* Ingredients */}
                       {meal.ingredients && meal.ingredients.length > 0 && (
-                        <div className="mb-4 bg-gradient-to-r from-slate-700/50 to-slate-600/50 border border-cyan-500/30 p-4 rounded-xl">
-                          <p className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                        <div className="mb-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 p-4 rounded-xl">
+                          <p className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
                             <span className="text-xl">🛒</span>
                             Ingredients
                           </p>
                           <ul className="grid grid-cols-2 gap-2">
                             {meal.ingredients.map((ingredient, i) => (
-                              <li key={i} className="text-sm text-gray-300 flex items-start gap-2">
-                                <span className="text-emerald-400">✓</span>
+                              <li key={i} className="text-sm text-gray-700 flex items-start gap-2">
+                                <span className="text-emerald-600">✓</span>
                                 {ingredient}
                               </li>
                             ))}
@@ -215,23 +215,23 @@ export const DietPage = () => {
                       
                       {/* Preparation Tips */}
                       {meal.preparation_tips && (
-                        <div className="bg-gradient-to-r from-slate-700/50 to-slate-600/50 border border-sky-500/30 p-4 rounded-xl mb-4">
-                          <p className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                        <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-xl mb-4">
+                          <p className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
                             <span className="text-xl">👨‍🍳</span>
                             Prep Tips
                           </p>
-                          <p className="text-sm text-gray-300 leading-relaxed">{meal.preparation_tips}</p>
+                          <p className="text-sm text-gray-700 leading-relaxed">{meal.preparation_tips}</p>
                         </div>
                       )}
                       
                       {/* Why This Meal - AI Generated */}
                       {meal.why_this_meal && (
-                        <div className="bg-gradient-to-r from-slate-700/50 to-slate-600/50 border border-emerald-500/30 p-4 rounded-xl">
-                          <p className="text-sm font-bold text-white mb-2 flex items-center gap-2">
+                        <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-4 rounded-xl">
+                          <p className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
                             <span className="text-xl">💡</span>
                             Why This Meal
                           </p>
-                          <p className="text-sm text-gray-300 leading-relaxed">{meal.why_this_meal}</p>
+                          <p className="text-sm text-gray-700 leading-relaxed">{meal.why_this_meal}</p>
                         </div>
                       )}
                     </div>
@@ -264,46 +264,46 @@ export const DietPage = () => {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {/* Hydration Goal */}
               {dietPlan.hydration_goal && (
-                <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:shadow-xl hover:shadow-cyan-500/10 transition-shadow animate-slide-up">
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <div className="card p-6 hover:shadow-xl transition-shadow animate-slide-up">
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <span className="text-3xl">💧</span>
                     Hydration
                   </h3>
-                  <p className="text-gray-300 leading-relaxed">{dietPlan.hydration_goal}</p>
+                  <p className="text-gray-700 leading-relaxed">{dietPlan.hydration_goal}</p>
                 </div>
               )}
 
               {/* Supplement Suggestions */}
               {dietPlan.supplement_suggestions && (
-                <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:shadow-xl hover:shadow-emerald-500/10 transition-shadow animate-slide-up" style={{animationDelay: '0.1s'}}>
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <div className="card p-6 hover:shadow-xl transition-shadow animate-slide-up" style={{animationDelay: '0.1s'}}>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <span className="text-3xl">💊</span>
                     Supplements
                   </h3>
-                  <p className="text-gray-300 leading-relaxed">{dietPlan.supplement_suggestions}</p>
+                  <p className="text-gray-700 leading-relaxed">{dietPlan.supplement_suggestions}</p>
                 </div>
               )}
 
               {/* Meal Prep Tips */}
               {dietPlan.meal_prep_tips && (
-                <div className="bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl p-6 hover:shadow-xl hover:shadow-sky-500/10 transition-shadow animate-slide-up" style={{animationDelay: '0.2s'}}>
-                  <h3 className="text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <div className="card p-6 hover:shadow-xl transition-shadow animate-slide-up" style={{animationDelay: '0.2s'}}>
+                  <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
                     <span className="text-3xl">📦</span>
                     Meal Prep
                   </h3>
-                  <p className="text-gray-300 leading-relaxed">{dietPlan.meal_prep_tips}</p>
+                  <p className="text-gray-700 leading-relaxed">{dietPlan.meal_prep_tips}</p>
                 </div>
               )}
             </div>
 
             {/* Adjustment Notes */}
             {dietPlan.adjustment_notes && (
-              <div className="bg-slate-800/50 backdrop-blur-sm border border-amber-500/50 border-l-4 rounded-2xl p-6 mt-8 animate-fade-in">
+              <div className="card border-l-4 border-amber-500 p-6 mt-8 animate-fade-in">
                 <div className="flex items-start gap-4">
                   <span className="text-3xl">⚙️</span>
                   <div>
-                    <p className="text-sm font-bold text-white mb-2">Adjustment Notes</p>
-                    <p className="text-gray-300 leading-relaxed">{dietPlan.adjustment_notes}</p>
+                    <p className="text-sm font-bold text-gray-900 mb-2">Adjustment Notes</p>
+                    <p className="text-gray-700 leading-relaxed">{dietPlan.adjustment_notes}</p>
                   </div>
                 </div>
               </div>

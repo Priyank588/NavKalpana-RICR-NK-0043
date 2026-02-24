@@ -12,7 +12,8 @@ export const registerUser = async (name, email, password) => {
   const user = new User({
     name,
     email,
-    password_hash: password
+    password_hash: password,
+    last_login: null // New user, no previous login
   });
   
   await user.save();
@@ -24,7 +25,8 @@ export const registerUser = async (name, email, password) => {
     user: {
       id: user._id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      isReturningUser: false // New user
     },
     token
   };
@@ -45,6 +47,13 @@ export const loginUser = async (email, password) => {
     throw new Error('Invalid credentials');
   }
   
+  // Check if this is a returning user (has logged in before)
+  const isReturningUser = user.last_login !== null;
+  
+  // Update last login time
+  user.last_login = new Date();
+  await user.save();
+  
   // Generate JWT token
   const token = jwt.sign({ user_id: user._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
   
@@ -52,7 +61,8 @@ export const loginUser = async (email, password) => {
     user: {
       id: user._id,
       name: user.name,
-      email: user.email
+      email: user.email,
+      isReturningUser
     },
     token
   };

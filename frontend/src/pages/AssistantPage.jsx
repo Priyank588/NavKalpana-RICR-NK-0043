@@ -6,18 +6,83 @@ import toast from 'react-hot-toast';
 
 export const AssistantPage = () => {
   const navigate = useNavigate();
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
   const [question, setQuestion] = useState('');
   const [loading, setLoading] = useState(false);
   const [userStats, setUserStats] = useState(null);
-  const [chatHistory, setChatHistory] = useState([
-    {
-      type: 'bot',
-      message: 'Hi! I\'m your AI Fitness Coach. I have access to your complete fitness journey data and can provide personalized advice. What would you like to know?',
-      timestamp: new Date()
+  const [chatHistory, setChatHistory] = useState(() => {
+    // Load chat history from localStorage on component mount
+    const savedChat = localStorage.getItem('fitai_chat_history');
+    if (savedChat) {
+      try {
+        const parsed = JSON.parse(savedChat);
+        // Convert timestamp strings back to Date objects
+        return parsed.map(chat => ({
+          ...chat,
+          timestamp: new Date(chat.timestamp)
+        }));
+      } catch (error) {
+        console.error('Error loading chat history:', error);
+        return [
+          {
+            type: 'bot',
+            message: 'Hi! I\'m your AI Fitness Coach. I have access to your complete fitness journey data and can provide personalized advice. What would you like to know?',
+            timestamp: new Date()
+          }
+        ];
+      }
     }
-  ]);
+    return [
+      {
+        type: 'bot',
+        message: 'Hi! I\'m your AI Fitness Coach. I have access to your complete fitness journey data and can provide personalized advice. What would you like to know?',
+        timestamp: new Date()
+      }
+    ];
+  });
   const chatEndRef = useRef(null);
+
+  // Save chat history to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('fitai_chat_history', JSON.stringify(chatHistory));
+  }, [chatHistory]);
+
+  // Format AI response with HTML styling
+  const formatAIResponse = (text) => {
+    if (!text) return '';
+    
+    let formatted = text;
+    
+    // Remove markdown bold (**text**)
+    formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="text-violet-700 font-bold">$1</strong>');
+    
+    // Format step titles (Step 1:, Step 2:, etc.)
+    formatted = formatted.replace(/^(Step \d+:.*?)$/gm, '<div class="font-bold text-lg text-violet-600 mt-4 mb-2">$1</div>');
+    
+    // Format numbered lists (1., 2., 3., etc.)
+    formatted = formatted.replace(/^(\d+\.\s+)(.*?)$/gm, '<div class="ml-4 mb-2"><span class="font-bold text-violet-600">$1</span><span class="text-gray-800">$2</span></div>');
+    
+    // Format bullet points (-, •, *)
+    formatted = formatted.replace(/^[-•*]\s+(.*?)$/gm, '<div class="ml-4 mb-2 flex items-start"><span class="text-violet-500 mr-2">•</span><span class="text-gray-800">$1</span></div>');
+    
+    // Format headings (lines ending with :)
+    formatted = formatted.replace(/^([A-Z][^:\n]*:)$/gm, '<div class="font-bold text-lg text-gray-900 mt-4 mb-2">$1</div>');
+    
+    // Format important/critical text (IMPORTANT:, CRITICAL:, WARNING:, NOTE:)
+    formatted = formatted.replace(/(IMPORTANT|CRITICAL|WARNING|CAUTION):/gi, '<span class="font-bold text-red-600 bg-red-50 px-2 py-1 rounded">$1:</span>');
+    formatted = formatted.replace(/(NOTE|TIP|PRO TIP):/gi, '<span class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">$1:</span>');
+    formatted = formatted.replace(/(SUCCESS|GREAT|EXCELLENT):/gi, '<span class="font-bold text-green-600 bg-green-50 px-2 py-1 rounded">$1:</span>');
+    
+    // Format numbers with units (e.g., 70kg, 2000 kcal, 85%)
+    formatted = formatted.replace(/(\d+(?:\.\d+)?)\s*(kg|kcal|calories|%|cm|lbs|hours?|minutes?|days?|weeks?)/gi, '<span class="font-semibold text-violet-600">$1$2</span>');
+    
+    // Format line breaks
+    formatted = formatted.replace(/\n\n/g, '<div class="h-3"></div>');
+    formatted = formatted.replace(/\n/g, '<br/>');
+    
+    // Wrap in container
+    return `<div class="text-gray-800 leading-relaxed">${formatted}</div>`;
+  };
 
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -112,6 +177,17 @@ export const AssistantPage = () => {
     setQuestion(q);
   };
 
+  const clearChatHistory = () => {
+    const initialMessage = {
+      type: 'bot',
+      message: 'Hi! I\'m your AI Fitness Coach. I have access to your complete fitness journey data and can provide personalized advice. What would you like to know?',
+      timestamp: new Date()
+    };
+    setChatHistory([initialMessage]);
+    localStorage.setItem('fitai_chat_history', JSON.stringify([initialMessage]));
+    toast.success('Chat history cleared');
+  };
+
   const suggestedQuestions = [
     'How am I doing with my fitness journey?',
     'Why am I not losing weight?',
@@ -121,9 +197,9 @@ export const AssistantPage = () => {
   ];
 
   return (
-    <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 min-h-screen flex flex-col">
+    <div className="bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 min-h-screen flex flex-col">
       {/* Header */}
-      <div className="bg-gradient-to-r from-cyan-600 to-sky-600 text-white p-6 shadow-2xl animate-slide-down">
+      <div className="bg-gradient-to-r from-violet-500 to-purple-600 text-white p-6 shadow-2xl animate-slide-down">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <div>
             <h1 className="text-4xl font-bold mb-2 flex items-center gap-3">
@@ -132,7 +208,7 @@ export const AssistantPage = () => {
             </h1>
             <p className="text-cyan-100 text-lg">Get personalized advice based on your real data</p>
             {userStats && (
-              <div className="mt-3 text-sm text-cyan-100 flex gap-4 flex-wrap">
+              <div className="mt-3 text-sm text-purple-100 flex gap-4 flex-wrap">
                 <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full">📊 {userStats.weeksTracked} weeks tracked</span>
                 <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full">💪 {userStats.avgWorkout}% workout</span>
                 <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full">🥗 {userStats.avgDiet}% diet</span>
@@ -142,10 +218,20 @@ export const AssistantPage = () => {
           </div>
           <div className="flex gap-3">
             <button
-              onClick={() => navigate('/dashboard')}
-              className="group relative px-6 py-3 bg-white text-cyan-600 font-bold rounded-xl shadow-lg hover:shadow-white/50 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 overflow-hidden"
+              onClick={clearChatHistory}
+              className="group relative px-6 py-3 bg-white bg-opacity-20 hover:bg-opacity-30 text-white font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105 overflow-hidden"
+              title="Clear chat history"
             >
-              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-50 to-sky-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+              <span className="relative flex items-center gap-2">
+                <span className="text-xl">🗑️</span>
+                <span>Clear Chat</span>
+              </span>
+            </button>
+            <button
+              onClick={() => navigate('/dashboard')}
+              className="group relative px-6 py-3 bg-white text-violet-600 font-bold rounded-xl shadow-lg hover:shadow-white/50 transition-all duration-300 transform hover:scale-105 hover:-translate-y-1 overflow-hidden"
+            >
+              <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-violet-50 to-purple-50 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
               <span className="relative flex items-center gap-2">
                 <span className="text-xl">🏠</span>
                 <span>Dashboard</span>
@@ -174,19 +260,22 @@ export const AssistantPage = () => {
         <div className="flex-1 overflow-y-auto mb-4 space-y-4 pb-4">
           {chatHistory.map((chat, idx) => (
             <div key={idx} className={`flex ${chat.type === 'user' ? 'justify-end' : 'justify-start'}`}>
-              <div className={`max-w-[80%] ${chat.type === 'user' ? 'bg-gradient-to-br from-cyan-500 to-sky-600 text-white' : 'bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 text-white'} rounded-lg p-4 shadow-lg`}>
+              <div className={`max-w-[80%] ${chat.type === 'user' ? 'bg-gradient-to-br from-violet-500 to-purple-600 text-white' : 'bg-white border border-gray-200 text-gray-900'} rounded-lg p-4 shadow-lg`}>
                 {chat.type === 'bot' && (
                   <div className="flex items-center mb-2">
                     <span className="text-2xl mr-2">🤖</span>
-                    <span className="font-bold text-sm text-cyan-400">AI Coach</span>
+                    <span className="font-bold text-sm text-violet-600">AI Coach</span>
                   </div>
                 )}
                 
-                <p className="whitespace-pre-wrap">{chat.message}</p>
+                <div 
+                  className="prose prose-sm max-w-none"
+                  dangerouslySetInnerHTML={{ __html: formatAIResponse(chat.message) }}
+                />
                 
                 {chat.steps && (
-                  <div className="mt-3 pt-3 border-t border-slate-600">
-                    <p className="font-bold text-sm mb-2 text-cyan-400">📋 Action Steps:</p>
+                  <div className="mt-3 pt-3 border-t border-gray-200">
+                    <p className="font-bold text-sm mb-2 text-violet-600">📋 Action Steps:</p>
                     <ul className="list-disc list-inside space-y-1 text-sm">
                       {chat.steps.map((step, i) => (
                         <li key={i}>{step}</li>
@@ -196,19 +285,19 @@ export const AssistantPage = () => {
                 )}
                 
                 {chat.tip && (
-                  <div className="mt-3 bg-cyan-500/20 border border-cyan-500/30 p-2 rounded text-sm">
-                    <span className="font-bold text-cyan-400">💡 Tip:</span> {chat.tip}
+                  <div className="mt-3 bg-violet-50 border border-violet-200 p-2 rounded text-sm">
+                    <span className="font-bold text-violet-600">💡 Tip:</span> {chat.tip}
                   </div>
                 )}
                 
                 {chat.data_insights && (
-                  <div className="mt-3 bg-sky-500/20 border border-sky-500/30 p-2 rounded text-sm">
-                    <span className="font-bold text-sky-400">📊 Data Insights:</span> {chat.data_insights}
+                  <div className="mt-3 bg-blue-50 border border-blue-200 p-2 rounded text-sm">
+                    <span className="font-bold text-blue-600">📊 Data Insights:</span> {chat.data_insights}
                   </div>
                 )}
                 
                 {chat.disclaimer && (
-                  <p className="text-xs text-red-400 mt-2">
+                  <p className="text-xs text-red-600 mt-2">
                     ⚠️ {chat.disclaimer}
                   </p>
                 )}
@@ -222,11 +311,11 @@ export const AssistantPage = () => {
           
           {loading && (
             <div className="flex justify-start">
-              <div className="bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-lg p-4 shadow-lg">
+              <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-lg">
                 <div className="flex items-center space-x-2">
-                  <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce"></div>
-                  <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
-                  <div className="w-2 h-2 bg-cyan-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
+                  <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce"></div>
+                  <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                  <div className="w-2 h-2 bg-violet-500 rounded-full animate-bounce" style={{ animationDelay: '0.4s' }}></div>
                 </div>
               </div>
             </div>
@@ -238,13 +327,13 @@ export const AssistantPage = () => {
         {/* Suggested Questions */}
         {chatHistory.length === 1 && (
           <div className="mb-4">
-            <p className="text-sm text-gray-400 mb-2 font-semibold">💬 Try asking:</p>
+            <p className="text-sm text-gray-600 mb-2 font-semibold">💬 Try asking:</p>
             <div className="flex flex-wrap gap-2">
               {suggestedQuestions.map((q, idx) => (
                 <button
                   key={idx}
                   onClick={() => handleSuggestedQuestion(q)}
-                  className="text-sm px-3 py-2 bg-slate-800/50 hover:bg-slate-700/50 border border-slate-700/50 hover:border-cyan-500/50 rounded-full text-gray-300 hover:text-cyan-400 transition"
+                  className="text-sm px-3 py-2 bg-white hover:bg-gray-50 border border-gray-200 hover:border-violet-300 rounded-full text-gray-700 hover:text-violet-600 transition"
                 >
                   {q}
                 </button>
@@ -254,20 +343,20 @@ export const AssistantPage = () => {
         )}
 
         {/* Input Area */}
-        <form onSubmit={handleAsk} className="bg-slate-800/80 backdrop-blur-sm border border-slate-700/50 rounded-lg shadow-lg p-4">
+        <form onSubmit={handleAsk} className="bg-white border border-gray-200 rounded-lg shadow-lg p-4">
           <div className="flex gap-2">
             <input
               type="text"
               value={question}
               onChange={(e) => setQuestion(e.target.value)}
               placeholder="Ask me anything about your fitness journey..."
-              className="flex-1 px-4 py-3 bg-slate-900/50 border border-slate-600/50 text-white placeholder-gray-400 rounded-lg focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent"
+              className="flex-1 px-4 py-3 bg-gray-50 border-2 border-gray-200 text-gray-900 placeholder-gray-500 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500 focus:border-transparent"
               disabled={loading}
             />
             <button
               type="submit"
               disabled={loading || !question.trim()}
-              className="bg-gradient-to-r from-cyan-500 to-sky-600 hover:from-cyan-600 hover:to-sky-700 text-white font-bold px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105"
+              className="bg-gradient-to-r from-violet-500 to-purple-600 hover:from-violet-600 hover:to-purple-700 text-white font-bold px-6 py-3 rounded-lg disabled:opacity-50 disabled:cursor-not-allowed transition-all transform hover:scale-105"
             >
               {loading ? '...' : 'Send'}
             </button>

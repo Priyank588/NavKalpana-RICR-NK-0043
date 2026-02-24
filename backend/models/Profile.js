@@ -58,6 +58,19 @@ const profileSchema = new mongoose.Schema({
     max: 7,
     default: 4
   },
+  // Body Measurements (Optional - for tracking progress)
+  initial_measurements: {
+    waist_cm: { type: Number, min: 0 },
+    chest_cm: { type: Number, min: 0 },
+    hips_cm: { type: Number, min: 0 },
+    arms_cm: { type: Number, min: 0 },
+    thighs_cm: { type: Number, min: 0 },
+    measured_at: { type: Date }
+  },
+  last_measurement_reminder: {
+    type: Date,
+    default: null
+  },
   // NEW: User preferences and limitations
   dietary_preferences: {
     type: String,

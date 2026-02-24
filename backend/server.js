@@ -15,6 +15,8 @@ import progressRoutes from './routes/progressRoutes.js';
 import assistantRoutes from './routes/assistantRoutes.js';
 import exerciseLogRoutes from './routes/exerciseLogRoutes.js';
 import dailyLogRoutes from './routes/dailyLogRoutes.js';
+import measurementRoutes from './routes/measurementRoutes.js';
+import recoveryRoutes from './routes/recoveryRoutes.js';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -42,6 +44,8 @@ app.use('/api/progress', progressRoutes);
 app.use('/api/assistant', assistantRoutes);
 app.use('/api/exercises', exerciseLogRoutes);
 app.use('/api/daily', dailyLogRoutes);
+app.use('/api/measurements', measurementRoutes);
+app.use('/api/recovery', recoveryRoutes);
 
 // Error handling middleware
 app.use((err, req, res, next) => {

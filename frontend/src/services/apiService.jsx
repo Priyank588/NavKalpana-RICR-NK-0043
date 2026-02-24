@@ -116,4 +116,28 @@ export const dailyLogService = {
     api.get(`/daily/adherence/${weekNumber}`)
 };
 
+// Measurement endpoints
+export const measurementService = {
+  addMeasurement: (measurements, notes = '') =>
+    api.post('/measurements', { measurements, notes }),
+  getAllMeasurements: () =>
+    api.get('/measurements'),
+  getLatestMeasurement: () =>
+    api.get('/measurements/latest'),
+  checkReminder: () =>
+    api.get('/measurements/reminder'),
+  compareMeasurements: () =>
+    api.get('/measurements/compare'),
+  getMeasurementHistory: () =>
+    api.get('/measurements/history')
+};
+
+// Recovery Intelligence endpoints
+export const recoveryService = {
+  getRecoveryStatus: () =>
+    api.get('/recovery/status'),
+  getWorkoutRecommendation: (energyLevel) =>
+    api.get('/recovery/recommendation', { params: { energy_level: energyLevel } })
+};
+
 export default api;

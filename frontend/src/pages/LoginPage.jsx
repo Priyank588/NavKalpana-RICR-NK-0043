@@ -22,52 +22,52 @@ export const LoginPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-cyan-900 relative overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 relative overflow-hidden">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 text-6xl animate-float opacity-10">💪</div>
-        <div className="absolute bottom-20 right-10 text-6xl animate-float opacity-10" style={{animationDelay: '1s'}}>🏃</div>
-        <div className="absolute top-40 right-20 text-6xl animate-float opacity-10" style={{animationDelay: '2s'}}>🥗</div>
-        <div className="absolute bottom-40 left-20 text-6xl animate-float opacity-10" style={{animationDelay: '1.5s'}}>🎯</div>
+        <div className="absolute top-20 left-10 text-6xl animate-float opacity-20">💪</div>
+        <div className="absolute bottom-20 right-10 text-6xl animate-float opacity-20" style={{animationDelay: '1s'}}>🏃</div>
+        <div className="absolute top-40 right-20 text-6xl animate-float opacity-20" style={{animationDelay: '2s'}}>🥗</div>
+        <div className="absolute bottom-40 left-20 text-6xl animate-float opacity-20" style={{animationDelay: '1.5s'}}>🎯</div>
       </div>
       
       {/* Gradient Orbs */}
-      <div className="absolute top-0 left-0 w-96 h-96 bg-cyan-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse"></div>
-      <div className="absolute bottom-0 right-0 w-96 h-96 bg-sky-500 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-pulse" style={{animationDelay: '2s'}}></div>
+      <div className="absolute top-0 left-0 w-96 h-96 bg-violet-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{animationDelay: '2s'}}></div>
       
-      <div className="glass-card p-10 w-full max-w-md animate-scale-in relative z-10 border border-cyan-500/20">
+      <div className="bg-white border border-gray-200 rounded-3xl shadow-2xl p-10 w-full max-w-md animate-scale-in relative z-10">
         <div className="text-center mb-8">
           <div className="text-7xl mb-4 animate-bounce-subtle">🔐</div>
           <h1 className="text-5xl font-bold gradient-text mb-3">Welcome Back!</h1>
-          <p className="text-gray-400 text-lg">Login to continue your fitness journey</p>
+          <p className="text-gray-600 text-lg">Login to continue your fitness journey</p>
         </div>
         
         <form onSubmit={handleSubmit} className="space-y-6">
           <div className="animate-slide-up">
-            <label className="block text-gray-300 text-sm font-bold mb-2 flex items-center gap-2">
-              <span className="text-cyan-400">📧</span>
+            <label className="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
+              <span className="text-violet-600">📧</span>
               Email Address
             </label>
             <input
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+              className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-100 transition-all duration-300"
               placeholder="your@email.com"
               required
             />
           </div>
           
           <div className="animate-slide-up" style={{animationDelay: '0.1s'}}>
-            <label className="block text-gray-300 text-sm font-bold mb-2 flex items-center gap-2">
-              <span className="text-cyan-400">🔒</span>
+            <label className="block text-gray-700 text-sm font-bold mb-2 flex items-center gap-2">
+              <span className="text-violet-600">🔒</span>
               Password
             </label>
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 rounded-xl text-white placeholder-gray-500 focus:outline-none focus:border-cyan-500 focus:ring-2 focus:ring-cyan-500/20 transition-all duration-300"
+              className="w-full px-4 py-3 bg-gray-50 border-2 border-gray-200 rounded-xl text-gray-900 placeholder-gray-400 focus:outline-none focus:border-violet-500 focus:ring-4 focus:ring-violet-100 transition-all duration-300"
               placeholder="••••••••"
               required
             />
@@ -76,10 +76,10 @@ export const LoginPage = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full group relative px-6 py-4 bg-gradient-to-r from-cyan-500 to-sky-500 text-white font-bold rounded-xl shadow-lg hover:shadow-cyan-500/50 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden animate-slide-up"
+            className="w-full group relative px-6 py-4 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-violet-500/50 transition-all duration-300 transform hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none overflow-hidden animate-slide-up"
             style={{animationDelay: '0.2s'}}
           >
-            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-sky-500 to-cyan-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
+            <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-purple-600 to-violet-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></span>
             <span className="relative flex items-center justify-center gap-2 text-lg">
               {loading ? (
                 <>
@@ -97,17 +97,17 @@ export const LoginPage = () => {
         </form>
         
         <div className="mt-8 text-center animate-fade-in">
-          <p className="text-gray-400 text-sm">
+          <p className="text-gray-600 text-sm">
             Don't have an account?{' '}
-            <a href="/register" className="text-cyan-400 hover:text-cyan-300 font-bold hover:underline transition-colors">
+            <a href="/register" className="text-violet-600 hover:text-violet-700 font-bold hover:underline transition-colors">
               Register here
             </a>
           </p>
         </div>
         
         {/* Decorative Elements */}
-        <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-cyan-500 to-sky-500 rounded-full opacity-20 blur-2xl"></div>
-        <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-br from-sky-500 to-cyan-500 rounded-full opacity-20 blur-2xl"></div>
+        <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-violet-400 to-purple-500 rounded-full opacity-20 blur-2xl"></div>
+        <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-br from-purple-400 to-violet-500 rounded-full opacity-20 blur-2xl"></div>
       </div>
     </div>
   );

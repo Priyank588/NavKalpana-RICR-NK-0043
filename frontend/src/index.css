@@ -5,18 +5,46 @@
 @tailwind utilities;
 
 /* ============================================
-   GLOBAL STYLES & VARIABLES
+   LIGHT CREAM THEME - PROFESSIONAL
    ============================================ */
 
 :root {
-  --primary: #0ea5e9;
-  --primary-dark: #0284c7;
-  --secondary: #f97316;
-  --success: #22c55e;
-  --warning: #eab308;
+  /* Primary Colors - Purple/Violet */
+  --primary: #8b5cf6;
+  --primary-dark: #7c3aed;
+  --primary-light: #a78bfa;
+  
+  /* Secondary Colors */
+  --secondary: #ec4899;
+  --accent: #f59e0b;
+  
+  /* Status Colors */
+  --success: #10b981;
+  --warning: #f59e0b;
   --danger: #ef4444;
-  --dark: #0f172a;
-  --light: #f8fafc;
+  --info: #3b82f6;
+  
+  /* Background Colors - Cream Theme */
+  --bg-cream: #faf8f5;
+  --bg-light: #ffffff;
+  --bg-secondary: #f5f3ef;
+  --bg-tertiary: #ebe8e3;
+  
+  /* Text Colors */
+  --text-primary: #1f2937;
+  --text-secondary: #6b7280;
+  --text-tertiary: #9ca3af;
+  
+  /* Border Colors */
+  --border-light: #e5e7eb;
+  --border-medium: #d1d5db;
+  --border-dark: #9ca3af;
+  
+  /* Shadow Colors */
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
 }
 
 * {
@@ -29,18 +57,20 @@ body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #faf8f5 0%, #f5f3ef 50%, #ebe8e3 100%);
   min-height: 100vh;
   overflow-x: hidden;
+  color: var(--text-primary);
 }
 
 h1, h2, h3, h4, h5, h6 {
   font-family: 'Poppins', sans-serif;
   font-weight: 700;
+  color: var(--text-primary);
 }
 
 /* ============================================
-   CUSTOM SCROLLBAR
+   CUSTOM SCROLLBAR - LIGHT THEME
    ============================================ */
 
 ::-webkit-scrollbar {
@@ -49,18 +79,18 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.1);
+  background: #f5f3ef;
   border-radius: 10px;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   border-radius: 10px;
-  border: 2px solid rgba(255, 255, 255, 0.1);
+  border: 2px solid #f5f3ef;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(135deg, #06b6d4 0%, #0ea5e9 100%);
+  background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
 }
 
 /* ============================================
@@ -123,8 +153,8 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 @keyframes glow {
-  0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.4); }
-  50% { box-shadow: 0 0 40px rgba(99, 102, 241, 0.8); }
+  0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.3); }
+  50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.6); }
 }
 
 @keyframes gradient-shift {
@@ -155,53 +185,52 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* ============================================
-   GLASS MORPHISM
+   GLASS MORPHISM - LIGHT THEME
    ============================================ */
 
 .glass {
-  background: rgba(30, 41, 59, 0.3);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(10px);
   -webkit-backdrop-filter: blur(10px);
-  border: 1px solid rgba(100, 116, 139, 0.3);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
 }
 
 .glass-card {
-  background: rgba(30, 41, 59, 0.5);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(100, 116, 139, 0.3);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
   border-radius: 20px;
   transition: all 0.3s ease;
 }
 
 .glass-card:hover {
   transform: translateY(-5px);
-  box-shadow: 0 12px 40px 0 rgba(14, 165, 233, 0.2);
+  box-shadow: 0 12px 40px 0 rgba(139, 92, 246, 0.15);
 }
 
 /* ============================================
-   GRADIENT TEXT
+   GRADIENT TEXT - LIGHT THEME
    ============================================ */
 
 .gradient-text {
-  background: linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%);
+  background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
 
-.gradient-text-white {
-  background: linear-gradient(135deg, #ffffff 0%, #e0f2fe 100%);
+.gradient-text-primary {
+  background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
-  text-shadow: 0 2px 10px rgba(255, 255, 255, 0.3);
 }
 
 /* ============================================
-   BUTTONS
+   BUTTONS - LIGHT THEME
    ============================================ */
 
 .btn {
@@ -209,63 +238,62 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 .btn-primary {
-  @apply bg-gradient-to-r from-sky-500 to-cyan-500 text-white hover:from-sky-600 hover:to-cyan-600;
-  box-shadow: 0 4px 15px rgba(14, 165, 233, 0.4);
+  @apply bg-gradient-to-r from-violet-500 to-purple-600 text-white hover:from-violet-600 hover:to-purple-700;
+  box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3);
 }
 
 .btn-primary:hover {
-  box-shadow: 0 6px 20px rgba(14, 165, 233, 0.6);
+  box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5);
 }
 
 .btn-success {
-  @apply bg-gradient-to-r from-green-500 to-emerald-500 text-white hover:from-green-600 hover:to-emerald-600;
-  box-shadow: 0 4px 15px rgba(34, 197, 94, 0.4);
+  @apply bg-gradient-to-r from-green-500 to-emerald-600 text-white hover:from-green-600 hover:to-emerald-700;
+  box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3);
 }
 
 .btn-danger {
-  @apply bg-gradient-to-r from-red-500 to-rose-500 text-white hover:from-red-600 hover:to-rose-600;
+  @apply bg-gradient-to-r from-red-500 to-rose-600 text-white hover:from-red-600 hover:to-rose-700;
 }
 
 .btn-warning {
-  @apply bg-gradient-to-r from-orange-500 to-amber-500 text-white hover:from-orange-600 hover:to-amber-600;
+  @apply bg-gradient-to-r from-orange-500 to-amber-600 text-white hover:from-orange-600 hover:to-amber-700;
 }
 
 .btn-neutral {
-  @apply bg-slate-700 text-white hover:bg-slate-600 border-2 border-slate-600;
+  @apply bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-violet-300;
 }
 
 /* ============================================
-   CARDS
+   CARDS - LIGHT THEME
    ============================================ */
 
 .card {
-  @apply bg-slate-800/50 backdrop-blur-sm border border-slate-700/50 rounded-2xl shadow-xl p-6 transition-all duration-300;
+  @apply bg-white border border-gray-200 rounded-2xl shadow-lg p-6 transition-all duration-300;
 }
 
 .card:hover {
-  @apply shadow-2xl transform -translate-y-1;
-  box-shadow: 0 12px 40px 0 rgba(14, 165, 233, 0.15);
+  @apply shadow-xl transform -translate-y-1;
+  box-shadow: 0 12px 40px 0 rgba(139, 92, 246, 0.12);
 }
 
 .card-gradient {
   @apply rounded-2xl shadow-xl p-6 transition-all duration-300;
-  background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(100, 116, 139, 0.3);
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(250, 248, 245, 0.95) 100%);
+  border: 1px solid rgba(229, 231, 235, 0.8);
 }
 
 .glass-effect {
-  background: rgba(30, 41, 59, 0.5);
+  background: rgba(255, 255, 255, 0.8);
   backdrop-filter: blur(20px);
   -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(100, 116, 139, 0.3);
-  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(229, 231, 235, 0.8);
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
   border-radius: 20px;
   transition: all 0.3s ease;
 }
 
 /* ============================================
-   STAT CARDS
+   STAT CARDS - LIGHT THEME
    ============================================ */
 
 .stat-card {
@@ -281,30 +309,30 @@ h1, h2, h3, h4, h5, h6 {
   right: -50%;
   width: 200%;
   height: 200%;
-  background: radial-gradient(circle, rgba(255, 255, 255, 0.1) 0%, transparent 70%);
+  background: radial-gradient(circle, rgba(255, 255, 255, 0.2) 0%, transparent 70%);
   animation: float 6s ease-in-out infinite;
 }
 
 /* ============================================
-   INPUTS
+   INPUTS - LIGHT THEME
    ============================================ */
 
 .input-field {
-  @apply w-full px-4 py-3 rounded-xl border-2 border-gray-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-200 transition-all duration-300 outline-none;
+  @apply w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition-all duration-300 outline-none text-gray-900;
 }
 
 .input-field:focus {
   transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
 }
 
 /* ============================================
-   PAGE CONTAINER
+   PAGE CONTAINER - LIGHT THEME
    ============================================ */
 
 .page-container {
   @apply min-h-screen p-6;
-  background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+  background: linear-gradient(135deg, #faf8f5 0%, #f5f3ef 50%, #ebe8e3 100%);
   position: relative;
 }
 
@@ -316,17 +344,17 @@ h1, h2, h3, h4, h5, h6 {
   right: 0;
   bottom: 0;
   background: 
-    radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
-    radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+    radial-gradient(circle at 20% 50%, rgba(139, 92, 246, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 80% 80%, rgba(236, 72, 153, 0.05) 0%, transparent 50%);
   pointer-events: none;
 }
 
 /* ============================================
-   LOADING SPINNER
+   LOADING SPINNER - LIGHT THEME
    ============================================ */
 
 .spinner {
-  @apply w-12 h-12 border-4 border-gray-200 border-t-indigo-600 rounded-full;
+  @apply w-12 h-12 border-4 border-gray-200 border-t-violet-600 rounded-full;
   animation: spin 1s linear infinite;
 }
 
@@ -355,9 +383,62 @@ h1, h2, h3, h4, h5, h6 {
 
 .card-hover-lift:hover {
   transform: translateY(-8px) scale(1.02);
-  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 20px 40px rgba(139, 92, 246, 0.15);
 }
 
 .shadow-glow {
-  box-shadow: 0 0 20px rgba(99, 102, 241, 0.5);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
+}
+
+/* ============================================
+   PROFESSIONAL ENHANCEMENTS
+   ============================================ */
+
+.section-title {
+  @apply text-3xl font-bold text-gray-900 mb-6;
+  position: relative;
+  padding-bottom: 12px;
+}
+
+.section-title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(90deg, #8b5cf6, #ec4899);
+  border-radius: 2px;
+}
+
+.badge {
+  @apply inline-flex items-center px-3 py-1 rounded-full text-sm font-semibold;
+}
+
+.badge-primary {
+  @apply bg-violet-100 text-violet-700;
+}
+
+.badge-success {
+  @apply bg-green-100 text-green-700;
+}
+
+.badge-warning {
+  @apply bg-amber-100 text-amber-700;
+}
+
+.badge-danger {
+  @apply bg-red-100 text-red-700;
+}
+
+.divider {
+  @apply border-t border-gray-200 my-6;
+}
+
+.text-muted {
+  @apply text-gray-500;
+}
+
+.text-emphasis {
+  @apply text-violet-600 font-semibold;
 }

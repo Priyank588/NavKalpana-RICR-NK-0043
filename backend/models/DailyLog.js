@@ -10,17 +10,29 @@ const dailyLogSchema = new mongoose.Schema({
     type: Date,
     required: true
   },
+  // Enhanced workout tracking with status
   workout_completed: {
     type: Boolean,
     default: false
+  },
+  workout_status: {
+    type: String,
+    enum: ['Completed', 'Partial', 'Skipped'],
+    default: 'Skipped'
   },
   workout_notes: {
     type: String,
     default: ''
   },
+  // Enhanced diet tracking with adherence level
   diet_followed: {
     type: Boolean,
     default: false
+  },
+  diet_adherence: {
+    type: String,
+    enum: ['Followed', 'Mostly', 'Deviated'],
+    default: 'Deviated'
   },
   diet_notes: {
     type: String,
@@ -36,8 +48,8 @@ const dailyLogSchema = new mongoose.Schema({
   },
   energy_level: {
     type: String,
-    enum: ['Low', 'Medium', 'High'],
-    default: 'Medium'
+    enum: ['Energized', 'Normal', 'Slightly Fatigued', 'Very Tired'],
+    default: 'Normal'
   },
   mood: {
     type: String,
