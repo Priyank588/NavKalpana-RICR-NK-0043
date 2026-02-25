@@ -3,6 +3,7 @@ import { dailyLogService, recoveryService } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import logo from "../assets/logs.png";
 
 export const DailyLogPage = () => {
   const navigate = useNavigate();
@@ -108,7 +109,12 @@ export const DailyLogPage = () => {
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="flex justify-between items-center mb-8 animate-slide-down">
           <div>
-            <h1 className="text-5xl font-bold gradient-text mb-2">📝 Daily Log</h1>
+            <h1 className="text-5xl font-bold gradient-text mb-2"> <img 
+    src={logo}
+    alt="Logo"
+    className="w-12 h-12 mr-3 inline-block"
+  />
+  <span>Daily Log</span></h1>
             <p className="text-gray-600">Track your daily progress and maintain your streak</p>
           </div>
           <div className="flex gap-3">

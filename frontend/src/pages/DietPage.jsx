@@ -3,6 +3,7 @@ import { dietService } from '../services/apiService';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import toast from 'react-hot-toast';
+import diet from "../assets/diet.png";
 
 export const DietPage = () => {
   const navigate = useNavigate();
@@ -56,7 +57,12 @@ export const DietPage = () => {
       <div className="max-w-6xl mx-auto">
         <div className="flex justify-between items-center mb-8 animate-slide-down">
           <div>
-            <h1 className="text-5xl font-bold gradient-text mb-2">🥗 Diet Plan</h1>
+            <h1 className="text-5xl font-bold gradient-text mb-2">  <img 
+    src={diet}
+    alt="diet"
+    className="w-12 h-12 mr-3 inline-block"
+  />
+  <span>Diet Plan</span></h1>
             <p className="text-gray-600">Your personalized nutrition program</p>
           </div>
           <div className="flex gap-3">

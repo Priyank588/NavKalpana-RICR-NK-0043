@@ -1,5 +1,6 @@
 import React from 'react';
 import { useAuth } from '../context/AuthContext';
+import logo from "../assets/fitai.png";
 
 export const LandingPage = () => {
   const { token } = useAuth();
@@ -17,8 +18,11 @@ export const LandingPage = () => {
       
       <nav className="flex justify-between items-center p-6 md:px-12 relative z-10 animate-slide-down backdrop-blur-sm bg-white/70 border-b border-gray-200">
         <div className="flex items-center gap-3">
-          <div className="text-4xl animate-bounce-subtle">🤖</div>
-          <h1 className="text-4xl font-bold gradient-text">FitAI</h1>
+          <img
+  src={logo}
+  alt="FitAI Logo"
+  className="w-20 h-auto object-contain"
+/>
         </div>
         <div className="flex items-center gap-6">
           {token ? (
