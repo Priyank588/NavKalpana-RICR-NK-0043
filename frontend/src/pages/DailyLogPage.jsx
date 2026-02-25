@@ -84,7 +84,7 @@ export const DailyLogPage = () => {
         ...todayLog
       });
       toast.success('Daily log saved! Keep up the great work! 🎉', { id: loadingToast });
-      fetchStats(); // Refresh stats
+      fetchStats(); 
     } catch (err) {
       toast.error(err.response?.data?.error || 'Failed to save log', { id: loadingToast });
     } finally {
@@ -103,7 +103,7 @@ export const DailyLogPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 py-8 px-4">
-      {/* Animated Background Pattern */}
+      
       <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
       
       <div className="max-w-6xl mx-auto relative z-10">
@@ -140,7 +140,7 @@ export const DailyLogPage = () => {
           </div>
         </div>
 
-        {/* Recovery Intelligence Banner */}
+        
         {recoveryStatus && recoveryStatus.recommendation && (
           <div className={`mb-8 rounded-3xl p-6 shadow-xl animate-slide-down ${
             recoveryStatus.recommendation.level === 'critical' 
@@ -176,7 +176,7 @@ export const DailyLogPage = () => {
           </div>
         )}
 
-        {/* Stats Cards */}
+        
         {stats && (
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
             <div className="stat-card bg-gradient-to-br from-cyan-500 to-sky-600 text-white animate-slide-up">
@@ -217,14 +217,14 @@ export const DailyLogPage = () => {
           </div>
         )}
 
-        {/* Daily Log Form */}
+        
         <form onSubmit={handleSubmit} className="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 animate-scale-in">
           <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
             <span className="text-4xl">📅</span>
             Today's Log - {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
           </h2>
 
-          {/* Workout Section */}
+          
           <div className="mb-8 p-6 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200">
             <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <span className="text-3xl">💪</span>
@@ -257,7 +257,7 @@ export const DailyLogPage = () => {
             />
           </div>
 
-          {/* Diet Section */}
+          
           <div className="mb-8 p-6 bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl border border-green-200">
             <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <span className="text-3xl">🥗</span>
@@ -315,7 +315,7 @@ export const DailyLogPage = () => {
             />
           </div>
 
-          {/* Wellness Section */}
+          
           <div className="mb-8 p-6 bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl border border-purple-200">
             <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
               <span className="text-3xl">🌟</span>
@@ -381,7 +381,7 @@ export const DailyLogPage = () => {
             </div>
           </div>
 
-          {/* Additional Notes */}
+          
           <div className="mb-8">
             <label className="block text-sm font-bold text-gray-700 mb-2">Additional Notes</label>
             <textarea
@@ -393,7 +393,7 @@ export const DailyLogPage = () => {
             />
           </div>
 
-          {/* Submit Button */}
+          
           <button
             type="submit"
             disabled={saving}

@@ -12,7 +12,7 @@ export const ProgressPage = () => {
   const [dailyLogs, setDailyLogs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('weight');
-  const [timeRange, setTimeRange] = useState(12); // 4, 8, or 12 weeks
+  const [timeRange, setTimeRange] = useState(12); 
 
   useEffect(() => {
     const fetchData = async () => {
@@ -45,7 +45,7 @@ export const ProgressPage = () => {
     </div>
   );
 
-  // Prepare weight data from daily logs (filtered by time range)
+  
   const weeksInDays = timeRange * 7;
   const weightData = dailyLogs
     .slice(-weeksInDays)
@@ -56,7 +56,7 @@ export const ProgressPage = () => {
       weight_kg: log.weight_kg
     }));
 
-  // Prepare adherence data by week (filtered by time range)
+  
   const adherenceByWeek = {};
   dailyLogs.slice(-weeksInDays).forEach(log => {
     const logDate = new Date(log.date);
@@ -73,7 +73,7 @@ export const ProgressPage = () => {
     }
     adherenceByWeek[weekNum].total_days++;
     
-    // Calculate scores based on status
+    
     const workoutScore = {
       'Completed': 100,
       'Partial': 50,
@@ -100,7 +100,7 @@ export const ProgressPage = () => {
       diet_adherence_percent: Math.round(week.diet_score / week.total_days)
     }))
     .sort((a, b) => a.week_number - b.week_number)
-    .slice(-timeRange); // Filter by selected time range
+    .slice(-timeRange); 
 
   return (
     <div className="page-container">
@@ -111,7 +111,7 @@ export const ProgressPage = () => {
             <p className="text-gray-600">Track your fitness journey over time</p>
           </div>
           <div className="flex gap-3">
-            {/* Time Range Selector */}
+            
             <div className="flex gap-2 bg-white border-2 border-gray-200 rounded-xl p-1">
               <button
                 onClick={() => setTimeRange(4)}
@@ -167,7 +167,7 @@ export const ProgressPage = () => {
           </div>
         </div>
         
-        {/* Tabs */}
+        
         <div className="flex gap-4 mb-8 animate-scale-in">
           <button
             onClick={() => setActiveTab('weight')}
@@ -204,7 +204,7 @@ export const ProgressPage = () => {
           </button>
         </div>
         
-        {/* Weight Progress Chart */}
+        
         {activeTab === 'weight' && (
           <div className="card p-8 animate-fade-in">
             <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
@@ -267,7 +267,7 @@ export const ProgressPage = () => {
           </div>
         )}
         
-        {/* Adherence Chart */}
+        
         {activeTab === 'adherence' && (
           <div className="card p-8 animate-fade-in">
             <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
@@ -323,7 +323,7 @@ export const ProgressPage = () => {
           </div>
         )}
         
-        {/* Habit Scores Chart */}
+        
         {activeTab === 'habits' && (
           <div className="card p-8 animate-fade-in">
             <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">

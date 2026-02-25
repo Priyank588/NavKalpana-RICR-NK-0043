@@ -9,10 +9,9 @@ export const AuthProvider = ({ children }) => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Check if user is already logged in
+  
   useEffect(() => {
     if (token) {
-      // Verify token is still valid
       authService.getProfile()
         .then(res => setUser(res.data.user))
         .catch((err) => {
@@ -29,7 +28,7 @@ export const AuthProvider = ({ children }) => {
     try {
       const response = await authService.register(name, email, password);
       localStorage.setItem('token', response.data.token);
-      localStorage.setItem('isReturningUser', 'false'); // New user
+      localStorage.setItem('isReturningUser', 'false'); 
       setToken(response.data.token);
       setUser(response.data.user);
       return response.data;
@@ -62,7 +61,7 @@ export const AuthProvider = ({ children }) => {
   const logout = () => {
     localStorage.removeItem('token');
     localStorage.removeItem('isReturningUser');
-    localStorage.removeItem('fitai_chat_history'); // Clear chat history on logout
+    localStorage.removeItem('fitai_chat_history'); 
     setToken(null);
     setUser(null);
   };

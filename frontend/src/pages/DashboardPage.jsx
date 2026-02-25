@@ -69,25 +69,25 @@ export const DashboardPage = () => {
     </div>
   );
 
-  // Calculate REAL daily activity completion from actual logs
+  
   const todayLog = recentLogs.length > 0 ? recentLogs[recentLogs.length - 1] : null;
   const completionPercentage = todayLog 
     ? Math.round(((todayLog.workout_completed ? 1 : 0) + (todayLog.diet_followed ? 1 : 0)) / 2 * 100)
     : 0;
 
-  // Get REAL today's workout from actual workout plan based on current day
-  const today = new Date().getDay(); // 0 = Sunday, 1 = Monday, etc.
-  const todayWorkout = workout?.workouts?.find(w => w.day === today) || 
-                       workout?.workouts?.find(w => !w.rest_day); // Fallback to first non-rest day
   
-  // Get today's exercises
+  const today = new Date().getDay(); 
+  const todayWorkout = workout?.workouts?.find(w => w.day === today) || 
+                       workout?.workouts?.find(w => !w.rest_day); 
+  
+  
   const todayExercises = todayWorkout?.exercises || [];
 
-  // Generate dynamic motivation based on real data
+  
   const getDailyMotivation = () => {
     const dayOfWeek = new Date().getDay();
     
-    // Check if today is a rest day
+    
     if (todayWorkout?.rest_day) {
       return {
         icon: '🛌',
@@ -97,7 +97,7 @@ export const DashboardPage = () => {
       };
     }
     
-    // Check if workout is completed today
+    
     const todayCompleted = todayLog?.workout_completed;
     if (todayCompleted) {
       return {
@@ -108,45 +108,45 @@ export const DashboardPage = () => {
       };
     }
     
-    // Powerful motivational quotes for each day
+    
     const motivations = {
-      0: { // Sunday
+      0: { 
         icon: '🌅',
         title: 'Sunday Motivation',
         message: '"The only bad workout is the one that didn\'t happen." - Unknown',
         color: 'from-orange-500 to-red-600'
       },
-      1: { // Monday
+      1: { 
         icon: '💪',
         title: 'Monday Motivation',
         message: '"The body achieves what the mind believes." - Napoleon Hill',
         color: 'from-blue-500 to-indigo-600'
       },
-      2: { // Tuesday
+      2: { 
         icon: '🔥',
         title: 'Tuesday Motivation',
         message: '"Strength doesn\'t come from what you can do. It comes from overcoming the things you once thought you couldn\'t." - Rikki Rogers',
         color: 'from-red-500 to-orange-600'
       },
-      3: { // Wednesday
+      3: { 
         icon: '⚡',
         title: 'Wednesday Motivation',
         message: '"The pain you feel today will be the strength you feel tomorrow." - Arnold Schwarzenegger',
         color: 'from-yellow-500 to-amber-600'
       },
-      4: { // Thursday
+      4: { 
         icon: '🎯',
         title: 'Thursday Motivation',
         message: '"Don\'t limit your challenges. Challenge your limits." - Unknown',
         color: 'from-teal-500 to-cyan-600'
       },
-      5: { // Friday
+      5: { 
         icon: '🚀',
         title: 'Friday Motivation',
         message: '"Your body can stand almost anything. It\'s your mind that you have to convince." - Andrew Murphy',
         color: 'from-violet-500 to-purple-600'
       },
-      6: { // Saturday
+      6: { 
         icon: '💯',
         title: 'Saturday Motivation',
         message: '"The difference between try and triumph is a little umph." - Marvin Phillips',
@@ -159,7 +159,7 @@ export const DashboardPage = () => {
 
   const dailyMotivation = getDailyMotivation();
 
-  // Calculate REAL weekly stats from actual daily logs
+  
   const weeklyWorkouts = recentLogs.filter(log => log.workout_completed).length;
   const totalWaterIntake = recentLogs.reduce((sum, log) => sum + (log.water_intake_liters || 0), 0);
   const avgWaterIntake = recentLogs.length > 0 ? (totalWaterIntake / recentLogs.length).toFixed(1) : 0;
@@ -167,12 +167,12 @@ export const DashboardPage = () => {
   const avgCalories = recentLogs.length > 0 ? Math.round(weeklyCalories / recentLogs.length) : 0;
   const avgSleep = recentLogs.length > 0 ? (recentLogs.reduce((sum, log) => sum + (log.sleep_hours || 0), 0) / recentLogs.length).toFixed(1) : 0;
 
-  // Prepare REAL performance data from actual daily logs
+  
   const performanceData = recentLogs.slice(-7).map((log, idx) => {
     const logDate = new Date(log.date);
     const dayName = logDate.toLocaleDateString('en-US', { weekday: 'short' });
     
-    // Convert energy level to numeric value for chart
+    
     const energyMap = { 'Low': 1, 'Medium': 2, 'High': 3 };
     const energyValue = energyMap[log.energy_level] || 2;
     
@@ -187,7 +187,7 @@ export const DashboardPage = () => {
     };
   });
 
-  // Calculate adherence data for last 4 weeks
+  
   const adherenceByWeek = {};
   const fourWeeksInDays = 28;
   recentLogs.slice(-fourWeeksInDays).forEach(log => {
@@ -203,7 +203,7 @@ export const DashboardPage = () => {
     }
     adherenceByWeek[weekNum].total_days++;
     
-    // Calculate scores based on status
+    
     const workoutScore = {
       'Completed': 100,
       'Partial': 50,
@@ -227,11 +227,11 @@ export const DashboardPage = () => {
       diet: Math.round(week.diet_score / week.total_days)
     }))
     .sort((a, b) => parseInt(a.week.slice(1)) - parseInt(b.week.slice(1)))
-    .slice(-4); // Last 4 weeks
+    .slice(-4); 
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50">
-      {/* Sidebar */}
+      
       <div className="fixed left-0 top-0 h-full w-64 bg-gradient-to-b from-gray-900 to-gray-800 text-white p-6 shadow-2xl z-50">
         {/* Logo */}
         <div className="mb-12 flex justify-center">
@@ -242,7 +242,7 @@ export const DashboardPage = () => {
       />
     </div>
 
-        {/* Navigation */}
+        
         <nav className="space-y-2">
           <button
             onClick={() => setActiveView('dashboard')}
@@ -297,7 +297,7 @@ export const DashboardPage = () => {
           </button>
         </nav>
 
-        {/* Bottom Actions */}
+        
         <div className="absolute bottom-6 left-6 right-6 space-y-2">
           <button
             onClick={() => navigate('/profile')}
@@ -316,9 +316,9 @@ export const DashboardPage = () => {
         </div>
       </div>
 
-      {/* Main Content */}
+      
       <div className="ml-64 p-8">
-        {/* Header */}
+        
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-4xl font-bold text-gray-900 mb-2">
@@ -341,7 +341,7 @@ export const DashboardPage = () => {
           </div>
         </div>
 
-        {/* Measurement Reminder Notification */}
+        
         {measurementReminder?.reminder_due && (
           <div className="mb-6 bg-gradient-to-r from-violet-500 to-purple-600 rounded-2xl p-6 text-white shadow-xl animate-slide-down">
             <div className="flex items-start gap-4">
@@ -377,11 +377,11 @@ export const DashboardPage = () => {
           </div>
         )}
 
-        {/* Main Grid */}
+        
         <div className="grid grid-cols-4 gap-6">
-          {/* Left Column */}
+          
           <div className="space-y-6">
-            {/* Daily Motivation Card - NEW */}
+            
             <div className={`bg-gradient-to-br ${dailyMotivation.color} rounded-3xl p-6 text-white shadow-xl transform hover:scale-105 transition-all duration-300`}>
               <div className="flex items-start gap-4 mb-4">
                 <div className="text-5xl animate-bounce-subtle">{dailyMotivation.icon}</div>
@@ -393,7 +393,7 @@ export const DashboardPage = () => {
                 </div>
               </div>
               
-              {/* Progress indicator */}
+              
               {!todayWorkout?.rest_day && !todayLog?.workout_completed && (
                 <div className="mt-4 pt-4 border-t border-white border-opacity-30">
                   <div className="flex justify-between items-center text-sm mb-2">
@@ -417,11 +417,11 @@ export const DashboardPage = () => {
               )}
             </div>
 
-            {/* Daily Activity Card */}
+            
             <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-6 text-white shadow-xl">
               <h3 className="text-lg font-semibold mb-6">Daily Activity</h3>
               
-              {/* Circular Progress */}
+              
               <div className="relative w-48 h-48 mx-auto mb-6">
                 <svg className="transform -rotate-90 w-48 h-48">
                   <circle
@@ -456,7 +456,7 @@ export const DashboardPage = () => {
                 </div>
               </div>
 
-              {/* Stats - REAL DATA FROM DAILY LOGS */}
+              
               <div className="grid grid-cols-2 gap-4 text-sm">
                 <div>
                   <div className="flex items-center gap-2 mb-1">
@@ -488,7 +488,7 @@ export const DashboardPage = () => {
                 </div>
               </div>
 
-              {/* Progress Dots */}
+              
               <div className="flex justify-center gap-2 mt-6">
                 {[...Array(5)].map((_, i) => (
                   <div
@@ -502,12 +502,12 @@ export const DashboardPage = () => {
             </div>
           </div>
 
-          {/* Middle Column - SPANS 2 COLUMNS */}
+          
           <div className="col-span-2 space-y-6">
-            {/* Today's Workout Card - REAL DATA WITH EXERCISE CAROUSEL */}
+            
             <div className="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-6 text-white shadow-xl relative overflow-hidden">
               <div className="relative z-10">
-                {/* Header */}
+                
                 <div className="flex justify-between items-start mb-4">
                   <div>
                     <h3 className="text-lg font-semibold mb-1">
@@ -525,7 +525,7 @@ export const DashboardPage = () => {
                   </button>
                 </div>
 
-                {/* Exercise Carousel - SWIPEABLE */}
+                
                 {todayExercises.length > 0 ? (
                   <>
                     <div className="bg-white bg-opacity-10 rounded-xl p-4 mb-3 backdrop-blur-sm min-h-[120px]">
@@ -556,7 +556,7 @@ export const DashboardPage = () => {
                       </div>
                     </div>
 
-                    {/* Navigation Controls */}
+                    
                     <div className="flex items-center justify-between">
                       <button
                         onClick={() => setCurrentExerciseIndex(prev => 
@@ -608,13 +608,13 @@ export const DashboardPage = () => {
                 )}
               </div>
 
-              {/* Background Icon */}
+              
               <div className="absolute right-0 top-0 w-48 h-full opacity-10 flex items-center justify-center">
                 <div className="text-9xl">💪</div>
               </div>
             </div>
 
-            {/* Performance Metrics - REAL DATA FROM DAILY LOGS */}
+            
             <div className="bg-white border-2 border-gray-200 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-shadow duration-300">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
@@ -708,9 +708,9 @@ export const DashboardPage = () => {
               </div>
             </div>
 
-            {/* This Week's Focus and Weekly Adherence - SIDE BY SIDE */}
+            
             <div className="grid grid-cols-2 gap-6">
-              {/* This Week's Focus - REAL DATA FROM WORKOUT PLAN */}
+              
               <div className="bg-white rounded-3xl p-6 shadow-xl">
                 <h3 className="text-lg font-semibold text-gray-900 mb-4">This Week's Focus</h3>
                 <p className="text-sm text-gray-500 mb-4">{workout?.week_summary || 'Track your workout progress'}</p>
@@ -733,7 +733,7 @@ export const DashboardPage = () => {
                 </div>
               </div>
 
-              {/* Weekly Adherence Chart */}
+              
               <div className="bg-white border-2 border-gray-200 rounded-3xl p-6 shadow-xl hover:shadow-2xl transition-shadow duration-300">
                 <div className="flex items-center justify-between mb-4">
                   <h3 className="text-xl font-bold text-gray-900 flex items-center gap-2">
@@ -840,9 +840,9 @@ export const DashboardPage = () => {
             </div>
           </div>
 
-          {/* Right Column */}
+          
           <div className="space-y-6">
-            {/* AI Coach Insights - REAL DATA FROM DROPOFF RISK */}
+            
             <div className="bg-gradient-to-br from-teal-500 to-teal-600 rounded-3xl p-6 text-white shadow-xl">
               <div className="flex items-start justify-between mb-4">
                 <h3 className="text-lg font-semibold">AI Coach Insights</h3>
@@ -877,7 +877,7 @@ export const DashboardPage = () => {
               </button>
             </div>
 
-            {/* Recent Progress - REAL DATA */}
+            
             <div className="bg-white rounded-3xl p-6 shadow-xl">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Activity</h3>
               
@@ -927,7 +927,7 @@ export const DashboardPage = () => {
               </button>
             </div>
 
-            {/* Quick Stats */}
+            
             <div className="bg-white rounded-3xl p-6 shadow-xl">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">This Week</h3>
               

@@ -9,7 +9,7 @@ const api = axios.create({
   }
 });
 
-// Add token to requests
+
 api.interceptors.request.use((config) => {
   const token = localStorage.getItem('token');
   if (token) {
@@ -18,7 +18,7 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Auth endpoints
+
 export const authService = {
   register: (name, email, password) =>
     api.post('/auth/register', { name, email, password }),
@@ -28,7 +28,7 @@ export const authService = {
     api.get('/auth/profile')
 };
 
-// Profile endpoints
+
 export const profileService = {
   createProfile: (profileData) =>
     api.post('/profile', profileData),
@@ -38,7 +38,7 @@ export const profileService = {
     api.put('/profile', profileData)
 };
 
-// Workout endpoints
+
 export const workoutService = {
   generateWorkout: (weekNumber = 1) =>
     api.post('/workouts', { week_number: weekNumber }),
@@ -50,7 +50,7 @@ export const workoutService = {
     api.get('/workouts')
 };
 
-// Diet endpoints
+
 export const dietService = {
   generateDiet: (weekNumber = 1) =>
     api.post('/diet', { week_number: weekNumber }),
@@ -62,7 +62,7 @@ export const dietService = {
     api.get('/diet')
 };
 
-// Progress endpoints
+
 export const progressService = {
   logProgress: (weekNumber, weightKg, dailyLogs) =>
     api.post('/progress', { week_number: weekNumber, weight_kg: weightKg, daily_logs: dailyLogs }),
@@ -92,13 +92,13 @@ export const progressService = {
     api.get('/progress/forecast/goal')
 };
 
-// Assistant endpoints
+
 export const assistantService = {
   askQuestion: (question) =>
     api.post('/assistant/ask', { question })
 };
 
-// Daily Log endpoints
+
 export const dailyLogService = {
   logDaily: (logData) =>
     api.post('/daily/log', logData),
@@ -116,7 +116,7 @@ export const dailyLogService = {
     api.get(`/daily/adherence/${weekNumber}`)
 };
 
-// Measurement endpoints
+
 export const measurementService = {
   addMeasurement: (measurements, notes = '') =>
     api.post('/measurements', { measurements, notes }),
@@ -132,7 +132,7 @@ export const measurementService = {
     api.get('/measurements/history')
 };
 
-// Recovery Intelligence endpoints
+
 export const recoveryService = {
   getRecoveryStatus: () =>
     api.get('/recovery/status'),

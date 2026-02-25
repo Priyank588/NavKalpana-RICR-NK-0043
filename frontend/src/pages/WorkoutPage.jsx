@@ -134,7 +134,7 @@ export const WorkoutPage = () => {
           </div>
         ) : (
           <>
-            {/* Week Summary - AI Generated */}
+            
             {workoutPlan.week_summary && (
               <div className="bg-white border-2 border-violet-200 rounded-2xl p-8 mb-8 animate-slide-up shadow-lg">
                 <div className="flex items-center gap-3 mb-4">
@@ -148,7 +148,7 @@ export const WorkoutPage = () => {
               </div>
             )}
 
-            {/* Motivation Message - AI Generated */}
+            
             {workoutPlan.motivation_message && (
               <div className="card border-l-4 border-amber-500 p-6 mb-8 animate-slide-up" style={{animationDelay: '0.1s'}}>
                 <div className="flex items-start gap-4">
@@ -161,7 +161,7 @@ export const WorkoutPage = () => {
               </div>
             )}
             
-            {/* Day Selector */}
+            
             <div className="card p-6 mb-8 animate-scale-in">
               <h3 className="text-xl font-bold text-gray-900 mb-4">Select Training Day</h3>
               <div className="grid grid-cols-7 gap-3">
@@ -185,7 +185,7 @@ export const WorkoutPage = () => {
               </div>
             </div>
             
-            {/* Current Day Details */}
+            
             {currentDay && (
               <div className="card p-8 mb-8 animate-fade-in">
                 <div className="flex justify-between items-start mb-6">
@@ -266,9 +266,9 @@ export const WorkoutPage = () => {
               </div>
             )}
 
-            {/* AI-Generated Tips */}
+            
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {/* Progression Notes */}
+              
               {workoutPlan.progression_notes && (
                 <div className="card p-6 hover:shadow-xl transition-shadow animate-slide-up">
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -279,7 +279,7 @@ export const WorkoutPage = () => {
                 </div>
               )}
 
-              {/* Recovery Tips */}
+              
               {workoutPlan.recovery_tips && (
                 <div className="card p-6 hover:shadow-xl transition-shadow animate-slide-up" style={{animationDelay: '0.1s'}}>
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
