@@ -17,7 +17,7 @@ export const DashboardPage = () => {
   const [isReturningUser, setIsReturningUser] = useState(false);
 
   useEffect(() => {
-    // Check if user is returning
+    
     const returningStatus = localStorage.getItem('isReturningUser');
     setIsReturningUser(returningStatus === 'true');
   }, []);
@@ -100,7 +100,7 @@ export const DashboardPage = () => {
           </div>
         </div>
       
-        {/* Profile Summary Card */}
+        
         {profile && (
           <div className="card p-8 mb-8 animate-scale-in">
             <div className="flex justify-between items-start">
@@ -160,7 +160,7 @@ export const DashboardPage = () => {
         )}
       
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-          {/* Habit Score Card */}
+          
           <div className="stat-card bg-gradient-to-br from-violet-500 to-purple-600 text-white animate-slide-up">
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">Habit Score</h3>
@@ -173,7 +173,7 @@ export const DashboardPage = () => {
             </div>
           </div>
           
-          {/* Drop-off Risk Card - Enhanced */}
+          
           <div 
             onClick={() => setShowRiskDetails(true)}
             className={`stat-card cursor-pointer ${
@@ -206,7 +206,7 @@ export const DashboardPage = () => {
               {dropoffRisk?.at_risk ? 'Needs attention' : 'Keep it up!'}
             </div>
             
-            {/* Risk Score Bar */}
+            
             {dropoffRisk?.risk_score > 0 && (
               <div className="mt-4 pt-4 border-t border-opacity-30 border-white">
                 <div className="flex justify-between items-center mb-2">
@@ -222,7 +222,7 @@ export const DashboardPage = () => {
               </div>
             )}
             
-            {/* Reasons */}
+            
             {dropoffRisk?.reasons?.length > 0 && (
               <div className="mt-4 pt-4 border-t border-opacity-30 border-white">
                 <p className="text-sm font-bold mb-2">Issues:</p>
@@ -235,7 +235,7 @@ export const DashboardPage = () => {
               </div>
             )}
             
-            {/* Positive Notes */}
+            
             {dropoffRisk?.positive_notes?.length > 0 && (
               <div className="mt-4 pt-4 border-t border-opacity-30 border-white">
                 <p className="text-sm font-bold mb-2">Wins:</p>
@@ -248,7 +248,7 @@ export const DashboardPage = () => {
             <p className="text-xs opacity-75 mt-4 text-center">Click for details →</p>
           </div>
           
-          {/* Upcoming Workout Card */}
+          
           <div className="stat-card bg-gradient-to-br from-blue-500 to-indigo-600 text-white animate-slide-up" style={{animationDelay: '0.2s'}}>
             <div className="flex items-center justify-between mb-4">
               <h3 className="text-xl font-bold">This Week's Focus</h3>
@@ -262,7 +262,7 @@ export const DashboardPage = () => {
           </div>
         </div>
       
-        {/* Progress Chart */}
+        
         {progress.length > 0 && (
           <div className="card p-8 mb-8 animate-fade-in">
             <div className="flex justify-between items-center mb-6">
@@ -310,7 +310,7 @@ export const DashboardPage = () => {
           </div>
         )}
       
-        {/* Quick Actions */}
+        
         <div className="grid grid-cols-2 md:grid-cols-5 gap-6">
           <button
             onClick={() => navigate('/daily-log')}
@@ -359,11 +359,11 @@ export const DashboardPage = () => {
         </div>
       </div>
       
-      {/* Risk Details Modal */}
+      
       {showRiskDetails && dropoffRisk && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4" onClick={() => setShowRiskDetails(false)}>
           <div className="bg-white rounded-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            {/* Header */}
+            
             <div className={`p-8 ${
               dropoffRisk.risk_level === 'critical' ? 'bg-gradient-to-r from-red-600 to-red-700' :
               dropoffRisk.risk_level === 'high' ? 'bg-gradient-to-r from-orange-500 to-red-500' :
@@ -396,7 +396,7 @@ export const DashboardPage = () => {
                 </button>
               </div>
               
-              {/* Risk Score */}
+              
               <div className="bg-white bg-opacity-20 rounded-xl p-4">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-lg font-semibold">Risk Score</span>
@@ -411,9 +411,9 @@ export const DashboardPage = () => {
               </div>
             </div>
             
-            {/* Content */}
+            
             <div className="p-8 space-y-6 bg-gray-50">
-              {/* Positive Notes */}
+              
               {dropoffRisk.positive_notes?.length > 0 && (
                 <div className="bg-gradient-to-br from-green-50 to-emerald-50 border-2 border-green-300 rounded-xl p-6">
                   <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -431,7 +431,7 @@ export const DashboardPage = () => {
                 </div>
               )}
               
-              {/* Issues */}
+              
               {dropoffRisk.reasons?.length > 0 && (
                 <div className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-300 rounded-xl p-6">
                   <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -449,7 +449,7 @@ export const DashboardPage = () => {
                 </div>
               )}
               
-              {/* Recommendations */}
+              
               {dropoffRisk.recommendations?.length > 0 && (
                 <div className="bg-gradient-to-br from-violet-50 to-purple-50 border-2 border-violet-300 rounded-xl p-6">
                   <h3 className="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -467,7 +467,7 @@ export const DashboardPage = () => {
                 </div>
               )}
               
-              {/* Quick Actions */}
+              
               <div className="grid grid-cols-2 gap-4 pt-4">
                 <button
                   onClick={() => { setShowRiskDetails(false); navigate('/daily-log'); }}

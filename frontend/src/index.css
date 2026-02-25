@@ -4,43 +4,42 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ============================================
-   LIGHT CREAM THEME - PROFESSIONAL
-   ============================================ */
+
+
 
 :root {
-  /* Primary Colors - Purple/Violet */
+  
   --primary: #8b5cf6;
   --primary-dark: #7c3aed;
   --primary-light: #a78bfa;
   
-  /* Secondary Colors */
+  
   --secondary: #ec4899;
   --accent: #f59e0b;
   
-  /* Status Colors */
+  
   --success: #10b981;
   --warning: #f59e0b;
   --danger: #ef4444;
   --info: #3b82f6;
   
-  /* Background Colors - Cream Theme */
+  
   --bg-cream: #faf8f5;
   --bg-light: #ffffff;
   --bg-secondary: #f5f3ef;
   --bg-tertiary: #ebe8e3;
   
-  /* Text Colors */
+  
   --text-primary: #1f2937;
   --text-secondary: #6b7280;
   --text-tertiary: #9ca3af;
   
-  /* Border Colors */
+  
   --border-light: #e5e7eb;
   --border-medium: #d1d5db;
   --border-dark: #9ca3af;
   
-  /* Shadow Colors */
+  
   --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
   --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
@@ -69,9 +68,8 @@ h1, h2, h3, h4, h5, h6 {
   color: var(--text-primary);
 }
 
-/* ============================================
-   CUSTOM SCROLLBAR - LIGHT THEME
-   ============================================ */
+
+
 
 ::-webkit-scrollbar {
   width: 12px;
@@ -93,9 +91,8 @@ h1, h2, h3, h4, h5, h6 {
   background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);
 }
 
-/* ============================================
-   ANIMATIONS
-   ============================================ */
+
+
 
 @keyframes fadeIn {
   from { opacity: 0; }
@@ -163,9 +160,8 @@ h1, h2, h3, h4, h5, h6 {
   100% { background-position: 0% 50%; }
 }
 
-/* ============================================
-   UTILITY CLASSES
-   ============================================ */
+
+
 
 .animate-fade-in { animation: fadeIn 0.6s ease-out; }
 .animate-slide-up { animation: slideUp 0.6s ease-out; }
@@ -184,9 +180,8 @@ h1, h2, h3, h4, h5, h6 {
   animation: gradient-shift 3s ease infinite;
 }
 
-/* ============================================
-   GLASS MORPHISM - LIGHT THEME
-   ============================================ */
+
+
 
 .glass {
   background: rgba(255, 255, 255, 0.7);
@@ -211,9 +206,8 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 12px 40px 0 rgba(139, 92, 246, 0.15);
 }
 
-/* ============================================
-   GRADIENT TEXT - LIGHT THEME
-   ============================================ */
+
+
 
 .gradient-text {
   background: linear-gradient(135deg, #8b5cf6 0%, #ec4899 100%);
@@ -229,9 +223,8 @@ h1, h2, h3, h4, h5, h6 {
   background-clip: text;
 }
 
-/* ============================================
-   BUTTONS - LIGHT THEME
-   ============================================ */
+
+
 
 .btn {
   @apply px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 active:scale-95 shadow-lg;
@@ -263,9 +256,8 @@ h1, h2, h3, h4, h5, h6 {
   @apply bg-white text-gray-700 hover:bg-gray-50 border-2 border-gray-200 hover:border-violet-300;
 }
 
-/* ============================================
-   CARDS - LIGHT THEME
-   ============================================ */
+
+
 
 .card {
   @apply bg-white border border-gray-200 rounded-2xl shadow-lg p-6 transition-all duration-300;
@@ -292,9 +284,8 @@ h1, h2, h3, h4, h5, h6 {
   transition: all 0.3s ease;
 }
 
-/* ============================================
-   STAT CARDS - LIGHT THEME
-   ============================================ */
+
+
 
 .stat-card {
   @apply rounded-2xl p-6 text-white shadow-xl transition-all duration-300 transform hover:scale-105 hover:shadow-2xl;
@@ -313,9 +304,8 @@ h1, h2, h3, h4, h5, h6 {
   animation: float 6s ease-in-out infinite;
 }
 
-/* ============================================
-   INPUTS - LIGHT THEME
-   ============================================ */
+
+
 
 .input-field {
   @apply w-full px-4 py-3 rounded-xl border-2 border-gray-200 bg-white focus:border-violet-400 focus:ring-4 focus:ring-violet-100 transition-all duration-300 outline-none text-gray-900;
@@ -326,9 +316,8 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.15);
 }
 
-/* ============================================
-   PAGE CONTAINER - LIGHT THEME
-   ============================================ */
+
+
 
 .page-container {
   @apply min-h-screen p-6;
@@ -349,18 +338,16 @@ h1, h2, h3, h4, h5, h6 {
   pointer-events: none;
 }
 
-/* ============================================
-   LOADING SPINNER - LIGHT THEME
-   ============================================ */
+
+
 
 .spinner {
   @apply w-12 h-12 border-4 border-gray-200 border-t-violet-600 rounded-full;
   animation: spin 1s linear infinite;
 }
 
-/* ============================================
-   RESPONSIVE
-   ============================================ */
+
+
 
 @media (max-width: 768px) {
   .page-container { @apply p-4; }
@@ -368,9 +355,8 @@ h1, h2, h3, h4, h5, h6 {
   .btn { @apply px-4 py-2 text-sm; }
 }
 
-/* ============================================
-   CUSTOM ANIMATIONS FOR SPECIFIC ELEMENTS
-   ============================================ */
+
+
 
 .emoji-bounce {
   display: inline-block;
@@ -390,9 +376,8 @@ h1, h2, h3, h4, h5, h6 {
   box-shadow: 0 0 20px rgba(139, 92, 246, 0.4);
 }
 
-/* ============================================
-   PROFESSIONAL ENHANCEMENTS
-   ============================================ */
+
+
 
 .section-title {
   @apply text-3xl font-bold text-gray-900 mb-6;

@@ -85,7 +85,7 @@ export const ProfilePage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 py-8 px-4">
-      {/* Animated Background Pattern */}
+      
       <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
       
       <div className="max-w-5xl mx-auto relative z-10">
@@ -119,7 +119,7 @@ export const ProfilePage = () => {
 
         <div className="bg-white border border-gray-200 rounded-2xl shadow-lg p-8 animate-scale-in">
           {!editing ? (
-            // View Mode
+            
             <div>
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-900">Profile Information</h2>
@@ -198,7 +198,7 @@ export const ProfilePage = () => {
               </div>
             </div>
           ) : (
-            // Edit Mode
+            
             <form onSubmit={handleSubmit}>
               <div className="flex justify-between items-center mb-8">
                 <h2 className="text-3xl font-bold text-gray-900">Edit Profile</h2>

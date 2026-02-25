@@ -23,7 +23,7 @@ export const LoginPage = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 relative overflow-hidden">
-      {/* Animated Background Elements */}
+      
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute top-20 left-10 text-6xl animate-float opacity-20">💪</div>
         <div className="absolute bottom-20 right-10 text-6xl animate-float opacity-20" style={{animationDelay: '1s'}}>🏃</div>
@@ -101,7 +101,7 @@ export const LoginPage = () => {
           </p>
         </div>
         
-        {/* removed decorative blurred elements for a flat card look */}
+        
       </div>
     </div>
   );
