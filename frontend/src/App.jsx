@@ -4,6 +4,11 @@ import { Toaster } from 'react-hot-toast';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import ChatbotWidget from './components/ChatbotWidget';
 import LandingPage from './pages/LandingPage';
+import Privacy from './pages/Privacy';
+import Terms from './pages/Terms';
+import Contact from './pages/Contact';
+import About from './pages/About';
+import Footer from './components/Footer';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
 import ProfileSetupPage from './pages/ProfileSetupPage';
@@ -80,6 +85,10 @@ function App() {
         <ChatbotWidget />
         <Routes>
           <Route path="/" element={<LandingPage />} />
+          <Route path="/privacy" element={<Privacy />} />
+          <Route path="/terms" element={<Terms />} />
+          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/profile-setup" element={<ProtectedRoute element={<ProfileSetupPage />} />} />
@@ -91,6 +100,7 @@ function App() {
           <Route path="/daily-log" element={<ProtectedRoute element={<DailyLogPage />} />} />
           <Route path="/assistant" element={<ProtectedRoute element={<AssistantPage />} />} />
         </Routes>
+        <Footer />
       </AuthProvider>
     </Router>
   );

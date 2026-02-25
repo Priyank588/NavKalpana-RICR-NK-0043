@@ -240,25 +240,7 @@ export const LandingPage = () => {
         </div>
       )}
       
-      {/* Footer */}
-      <footer className="relative z-10 border-t border-gray-200 bg-white/70 backdrop-blur-sm mt-20">
-        <div className="max-w-7xl mx-auto px-4 py-12">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <div className="text-3xl">🤖</div>
-              <span className="text-2xl font-bold gradient-text">FitAI</span>
-            </div>
-            <div className="text-gray-600 text-center md:text-left">
-              © 2024 FitAI. Your AI-powered fitness companion.
-            </div>
-            <div className="flex gap-6">
-              <a href="#" className="text-gray-600 hover:text-violet-600 transition-colors">Privacy</a>
-              <a href="#" className="text-gray-600 hover:text-violet-600 transition-colors">Terms</a>
-              <a href="#" className="text-gray-600 hover:text-violet-600 transition-colors">Contact</a>
-            </div>
-          </div>
-        </div>
-      </footer>
+      {/* Footer is provided globally via Footer component in App.jsx */}
     </div>
   );
 };
