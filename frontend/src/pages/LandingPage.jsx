@@ -6,15 +6,15 @@ export const LandingPage = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 relative overflow-hidden">
-      {/* Animated Background Pattern */}
+      
       <div className="absolute inset-0 bg-[linear-gradient(rgba(139,92,246,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(139,92,246,0.03)_1px,transparent_1px)] bg-[size:50px_50px]"></div>
       
-      {/* Gradient Orbs - Light Theme */}
+      
       <div className="absolute top-0 left-1/4 w-96 h-96 bg-violet-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
       <div className="absolute top-1/3 right-1/4 w-96 h-96 bg-pink-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{animationDelay: '2s'}}></div>
       <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{animationDelay: '4s'}}></div>
       
-      {/* Navigation */}
+      
       <nav className="flex justify-between items-center p-6 md:px-12 relative z-10 animate-slide-down backdrop-blur-sm bg-white/70 border-b border-gray-200">
         <div className="flex items-center gap-3">
           <div className="text-4xl animate-bounce-subtle">🤖</div>
@@ -38,10 +38,10 @@ export const LandingPage = () => {
         </div>
       </nav>
       
-      {/* Hero Section */}
+      
       <div className="relative z-10 max-w-7xl mx-auto px-4 pt-20 pb-32">
         <div className="text-center">
-          {/* Badge */}
+          
           <div className="inline-flex items-center gap-2 px-4 py-2 bg-violet-100 border border-violet-300 rounded-full text-violet-700 text-sm font-semibold mb-8 animate-fade-in">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-violet-600 opacity-75"></span>
@@ -50,18 +50,18 @@ export const LandingPage = () => {
             AI-Powered Fitness Platform
           </div>
           
-          {/* Main Heading */}
+          
           <h1 className="text-6xl md:text-8xl font-bold mb-6 animate-scale-in leading-tight">
             <span className="gradient-text block mb-2">Transform Your Body</span>
             <span className="text-gray-900">With AI Intelligence</span>
           </h1>
           
-          {/* Subheading */}
+          
           <p className="text-xl md:text-2xl text-gray-600 mb-12 max-w-3xl mx-auto animate-fade-in leading-relaxed">
             Get personalized workout plans, nutrition guidance, and an AI coach that adapts to your progress in real-time. Your fitness journey, scientifically optimized.
           </p>
           
-          {/* CTA Buttons */}
+          
           {!token && (
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center animate-slide-up">
               <a href="/register" className="group relative px-8 py-4 bg-gradient-to-r from-violet-500 to-purple-600 text-white font-bold rounded-xl shadow-lg hover:shadow-violet-500/50 transition-all duration-300 transform hover:scale-105 overflow-hidden text-lg">
@@ -90,7 +90,7 @@ export const LandingPage = () => {
             </a>
           )}
           
-          {/* Stats */}
+          
           <div className="grid grid-cols-3 gap-8 max-w-3xl mx-auto mt-20 animate-fade-in">
             <div className="text-center">
               <div className="text-4xl md:text-5xl font-bold gradient-text mb-2">10K+</div>
@@ -108,7 +108,7 @@ export const LandingPage = () => {
         </div>
       </div>
       
-      {/* Features Section */}
+      
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-20">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-4 text-gray-900">
           Everything You Need to <span className="gradient-text">Succeed</span>
@@ -118,7 +118,7 @@ export const LandingPage = () => {
         </p>
         
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {/* Feature 1 */}
+          
           <div className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:shadow-violet-500/10 transition-all duration-300 hover:-translate-y-2 animate-scale-in">
             <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">💪</div>
             <h3 className="text-2xl font-bold mb-3 text-gray-900">AI Workout Plans</h3>
@@ -130,7 +130,7 @@ export const LandingPage = () => {
             </div>
           </div>
           
-          {/* Feature 2 */}
+          
           <div className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:shadow-pink-500/10 transition-all duration-300 hover:-translate-y-2 animate-scale-in" style={{animationDelay: '0.1s'}}>
             <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🥗</div>
             <h3 className="text-2xl font-bold mb-3 text-gray-900">Smart Nutrition</h3>
@@ -142,7 +142,7 @@ export const LandingPage = () => {
             </div>
           </div>
           
-          {/* Feature 3 */}
+          
           <div className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:shadow-purple-500/10 transition-all duration-300 hover:-translate-y-2 animate-scale-in" style={{animationDelay: '0.2s'}}>
             <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">🤖</div>
             <h3 className="text-2xl font-bold mb-3 text-gray-900">AI Coach</h3>
@@ -154,7 +154,7 @@ export const LandingPage = () => {
             </div>
           </div>
           
-          {/* Feature 4 */}
+          
           <div className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:shadow-blue-500/10 transition-all duration-300 hover:-translate-y-2 animate-scale-in" style={{animationDelay: '0.3s'}}>
             <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">📊</div>
             <h3 className="text-2xl font-bold mb-3 text-gray-900">Progress Tracking</h3>
@@ -166,7 +166,7 @@ export const LandingPage = () => {
             </div>
           </div>
           
-          {/* Feature 5 */}
+          
           <div className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:shadow-green-500/10 transition-all duration-300 hover:-translate-y-2 animate-scale-in" style={{animationDelay: '0.4s'}}>
             <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">📝</div>
             <h3 className="text-2xl font-bold mb-3 text-gray-900">Daily Logging</h3>
@@ -178,7 +178,7 @@ export const LandingPage = () => {
             </div>
           </div>
           
-          {/* Feature 6 */}
+          
           <div className="group bg-white border border-gray-200 rounded-2xl p-8 hover:shadow-xl hover:shadow-orange-500/10 transition-all duration-300 hover:-translate-y-2 animate-scale-in" style={{animationDelay: '0.5s'}}>
             <div className="text-5xl mb-4 group-hover:scale-110 transition-transform">⚡</div>
             <h3 className="text-2xl font-bold mb-3 text-gray-900">Adaptive System</h3>
@@ -192,7 +192,7 @@ export const LandingPage = () => {
         </div>
       </div>
       
-      {/* How It Works Section */}
+      
       <div className="relative z-10 max-w-7xl mx-auto px-4 py-20">
         <h2 className="text-4xl md:text-5xl font-bold text-center mb-16 text-gray-900">
           How It <span className="gradient-text">Works</span>
@@ -225,7 +225,7 @@ export const LandingPage = () => {
         </div>
       </div>
       
-      {/* CTA Section */}
+      
       {!token && (
         <div className="relative z-10 max-w-4xl mx-auto px-4 py-20">
           <div className="bg-gradient-to-br from-violet-500 to-purple-600 rounded-3xl p-12 text-center text-white shadow-2xl animate-scale-in">
@@ -240,7 +240,7 @@ export const LandingPage = () => {
         </div>
       )}
       
-      {/* Footer */}
+      
       <footer className="relative z-10 border-t border-gray-200 bg-white/70 backdrop-blur-sm mt-20">
         <div className="max-w-7xl mx-auto px-4 py-12">
           <div className="flex flex-col md:flex-row justify-between items-center gap-6">

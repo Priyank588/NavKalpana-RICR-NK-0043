@@ -6,7 +6,7 @@ const ChatbotWidget = () => {
   const navigate = useNavigate();
   const location = useLocation();
 
-  // Don't show on assistant page or landing/auth pages
+  
   if (location.pathname === '/assistant' || 
       location.pathname === '/' || 
       location.pathname === '/login' || 

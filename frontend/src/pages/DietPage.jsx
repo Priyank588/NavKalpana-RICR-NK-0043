@@ -130,7 +130,7 @@ export const DietPage = () => {
           </div>
         ) : (
           <>
-            {/* Week Summary - AI Generated */}
+            
             {dietPlan.week_summary && (
               <div className="bg-white border-2 border-green-200 rounded-2xl p-8 mb-8 animate-slide-up shadow-lg">
                 <div className="flex items-center gap-3 mb-4">
@@ -144,7 +144,7 @@ export const DietPage = () => {
               </div>
             )}
             
-            {/* Daily Targets */}
+            
             <div className="card p-8 mb-8 animate-scale-in">
               <h2 className="text-3xl font-bold text-gray-900 mb-6 flex items-center gap-2">
                 <span className="text-4xl">🎯</span>
@@ -174,7 +174,7 @@ export const DietPage = () => {
               </div>
             </div>
             
-            {/* Meals */}
+            
             <div className="space-y-6 mb-8">
               {dietPlan.meals.map((meal, idx) => (
                 <div key={idx} className="card p-8 hover:shadow-xl transition-all animate-scale-in" style={{animationDelay: `${idx * 0.1}s`}}>
@@ -195,7 +195,7 @@ export const DietPage = () => {
                       </div>
                       <p className="text-gray-700 text-lg mb-4 leading-relaxed">{meal.description}</p>
                       
-                      {/* Ingredients */}
+                      
                       {meal.ingredients && meal.ingredients.length > 0 && (
                         <div className="mb-4 bg-gradient-to-r from-green-50 to-emerald-50 border border-green-200 p-4 rounded-xl">
                           <p className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
@@ -213,7 +213,7 @@ export const DietPage = () => {
                         </div>
                       )}
                       
-                      {/* Preparation Tips */}
+                      
                       {meal.preparation_tips && (
                         <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-200 p-4 rounded-xl mb-4">
                           <p className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
@@ -224,7 +224,7 @@ export const DietPage = () => {
                         </div>
                       )}
                       
-                      {/* Why This Meal - AI Generated */}
+                      
                       {meal.why_this_meal && (
                         <div className="bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200 p-4 rounded-xl">
                           <p className="text-sm font-bold text-gray-900 mb-2 flex items-center gap-2">
@@ -260,9 +260,9 @@ export const DietPage = () => {
               ))}
             </div>
 
-            {/* AI-Generated Tips */}
+            
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {/* Hydration Goal */}
+              
               {dietPlan.hydration_goal && (
                 <div className="card p-6 hover:shadow-xl transition-shadow animate-slide-up">
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -273,7 +273,7 @@ export const DietPage = () => {
                 </div>
               )}
 
-              {/* Supplement Suggestions */}
+              
               {dietPlan.supplement_suggestions && (
                 <div className="card p-6 hover:shadow-xl transition-shadow animate-slide-up" style={{animationDelay: '0.1s'}}>
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -284,7 +284,7 @@ export const DietPage = () => {
                 </div>
               )}
 
-              {/* Meal Prep Tips */}
+              
               {dietPlan.meal_prep_tips && (
                 <div className="card p-6 hover:shadow-xl transition-shadow animate-slide-up" style={{animationDelay: '0.2s'}}>
                   <h3 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
@@ -296,7 +296,7 @@ export const DietPage = () => {
               )}
             </div>
 
-            {/* Adjustment Notes */}
+            
             {dietPlan.adjustment_notes && (
               <div className="card border-l-4 border-amber-500 p-6 mt-8 animate-fade-in">
                 <div className="flex items-start gap-4">

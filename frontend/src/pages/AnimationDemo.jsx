@@ -12,7 +12,7 @@ export const AnimationDemo = () => {
           <p className="text-xl text-gray-600">Interactive animations and effects</p>
         </div>
 
-        {/* Stat Cards */}
+        
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Animated Stat Cards</h2>
           <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -23,7 +23,7 @@ export const AnimationDemo = () => {
           </div>
         </div>
 
-        {/* Animated Cards */}
+        
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Card Animations</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -47,7 +47,7 @@ export const AnimationDemo = () => {
           </div>
         </div>
 
-        {/* Badges */}
+        
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Pulsing Badges</h2>
           <div className="flex flex-wrap gap-4">
@@ -59,7 +59,7 @@ export const AnimationDemo = () => {
           </div>
         </div>
 
-        {/* Buttons */}
+        
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Interactive Buttons</h2>
           <div className="flex flex-wrap gap-4">
@@ -78,7 +78,7 @@ export const AnimationDemo = () => {
           </div>
         </div>
 
-        {/* Progress Bars */}
+        
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Animated Progress Bars</h2>
           <div className="space-y-6 card p-8">
@@ -108,7 +108,7 @@ export const AnimationDemo = () => {
           </div>
         </div>
 
-        {/* Loading Spinners */}
+        
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Loading Spinners</h2>
           <div className="card p-8 flex justify-around items-center">
@@ -127,7 +127,7 @@ export const AnimationDemo = () => {
           </div>
         </div>
 
-        {/* Gradient Animations */}
+        
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Gradient Animations</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -143,7 +143,7 @@ export const AnimationDemo = () => {
           </div>
         </div>
 
-        {/* Staggered Animations */}
+        {}
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Staggered Animations</h2>
           <div className="grid grid-cols-2 md:grid-cols-6 gap-4">
@@ -159,7 +159,7 @@ export const AnimationDemo = () => {
           </div>
         </div>
 
-        {/* Hover Effects */}
+        
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Hover Effects</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -180,7 +180,7 @@ export const AnimationDemo = () => {
           </div>
         </div>
 
-        {/* Skeleton Loading */}
+        
         <div className="mb-12">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">Skeleton Loading</h2>
           <div className="card p-8 space-y-4">
@@ -190,7 +190,7 @@ export const AnimationDemo = () => {
           </div>
         </div>
 
-        {/* Success Animation */}
+        
         <div className="text-center">
           <div className="inline-block card p-12 success-animation">
             <div className="text-8xl mb-4 animate-bounce-subtle">🎉</div>

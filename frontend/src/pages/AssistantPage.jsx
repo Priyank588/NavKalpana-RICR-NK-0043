@@ -11,12 +11,12 @@ export const AssistantPage = () => {
   const [loading, setLoading] = useState(false);
   const [userStats, setUserStats] = useState(null);
   const [chatHistory, setChatHistory] = useState(() => {
-    // Load chat history from localStorage on component mount
+    
     const savedChat = localStorage.getItem('fitai_chat_history');
     if (savedChat) {
       try {
         const parsed = JSON.parse(savedChat);
-        // Convert timestamp strings back to Date objects
+        
         return parsed.map(chat => ({
           ...chat,
           timestamp: new Date(chat.timestamp)
@@ -42,45 +42,45 @@ export const AssistantPage = () => {
   });
   const chatEndRef = useRef(null);
 
-  // Save chat history to localStorage whenever it changes
+  
   useEffect(() => {
     localStorage.setItem('fitai_chat_history', JSON.stringify(chatHistory));
   }, [chatHistory]);
 
-  // Format AI response with HTML styling
+  
   const formatAIResponse = (text) => {
     if (!text) return '';
     
     let formatted = text;
     
-    // Remove markdown bold (**text**)
+    
     formatted = formatted.replace(/\*\*(.*?)\*\*/g, '<strong class="text-violet-700 font-bold">$1</strong>');
     
-    // Format step titles (Step 1:, Step 2:, etc.)
+    
     formatted = formatted.replace(/^(Step \d+:.*?)$/gm, '<div class="font-bold text-lg text-violet-600 mt-4 mb-2">$1</div>');
     
-    // Format numbered lists (1., 2., 3., etc.)
+    
     formatted = formatted.replace(/^(\d+\.\s+)(.*?)$/gm, '<div class="ml-4 mb-2"><span class="font-bold text-violet-600">$1</span><span class="text-gray-800">$2</span></div>');
     
-    // Format bullet points (-, •, *)
+    
     formatted = formatted.replace(/^[-•*]\s+(.*?)$/gm, '<div class="ml-4 mb-2 flex items-start"><span class="text-violet-500 mr-2">•</span><span class="text-gray-800">$1</span></div>');
     
-    // Format headings (lines ending with :)
+    
     formatted = formatted.replace(/^([A-Z][^:\n]*:)$/gm, '<div class="font-bold text-lg text-gray-900 mt-4 mb-2">$1</div>');
     
-    // Format important/critical text (IMPORTANT:, CRITICAL:, WARNING:, NOTE:)
+    
     formatted = formatted.replace(/(IMPORTANT|CRITICAL|WARNING|CAUTION):/gi, '<span class="font-bold text-red-600 bg-red-50 px-2 py-1 rounded">$1:</span>');
     formatted = formatted.replace(/(NOTE|TIP|PRO TIP):/gi, '<span class="font-bold text-blue-600 bg-blue-50 px-2 py-1 rounded">$1:</span>');
     formatted = formatted.replace(/(SUCCESS|GREAT|EXCELLENT):/gi, '<span class="font-bold text-green-600 bg-green-50 px-2 py-1 rounded">$1:</span>');
     
-    // Format numbers with units (e.g., 70kg, 2000 kcal, 85%)
+    
     formatted = formatted.replace(/(\d+(?:\.\d+)?)\s*(kg|kcal|calories|%|cm|lbs|hours?|minutes?|days?|weeks?)/gi, '<span class="font-semibold text-violet-600">$1$2</span>');
     
-    // Format line breaks
+    
     formatted = formatted.replace(/\n\n/g, '<div class="h-3"></div>');
     formatted = formatted.replace(/\n/g, '<br/>');
     
-    // Wrap in container
+    
     return `<div class="text-gray-800 leading-relaxed">${formatted}</div>`;
   };
 
@@ -92,7 +92,7 @@ export const AssistantPage = () => {
     scrollToBottom();
   }, [chatHistory]);
 
-  // Fetch user stats to show AI has context
+  
   useEffect(() => {
     const fetchUserStats = async () => {
       try {
@@ -135,7 +135,7 @@ export const AssistantPage = () => {
       return;
     }
     
-    // Add user message to chat
+    
     const userMessage = {
       type: 'user',
       message: question,
@@ -148,7 +148,7 @@ export const AssistantPage = () => {
     try {
       const res = await assistantService.askQuestion(question);
       
-      // Add bot response to chat
+      
       const botMessage = {
         type: 'bot',
         message: res.data.response,
@@ -198,7 +198,7 @@ export const AssistantPage = () => {
 
   return (
     <div className="bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 min-h-screen flex flex-col">
-      {/* Header */}
+      
       <div className="bg-gradient-to-r from-violet-500 to-purple-600 text-white p-6 shadow-2xl animate-slide-down">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
           <div>
@@ -254,9 +254,9 @@ export const AssistantPage = () => {
         </div>
       </div>
 
-      {/* Chat Container */}
+      
       <div className="flex-1 max-w-4xl w-full mx-auto p-4 overflow-hidden flex flex-col">
-        {/* Messages Area */}
+        
         <div className="flex-1 overflow-y-auto mb-4 space-y-4 pb-4">
           {chatHistory.map((chat, idx) => (
             <div key={idx} className={`flex ${chat.type === 'user' ? 'justify-end' : 'justify-start'}`}>
@@ -324,7 +324,7 @@ export const AssistantPage = () => {
           <div ref={chatEndRef} />
         </div>
 
-        {/* Suggested Questions */}
+        
         {chatHistory.length === 1 && (
           <div className="mb-4">
             <p className="text-sm text-gray-600 mb-2 font-semibold">💬 Try asking:</p>
@@ -342,7 +342,7 @@ export const AssistantPage = () => {
           </div>
         )}
 
-        {/* Input Area */}
+        
         <form onSubmit={handleAsk} className="bg-white border border-gray-200 rounded-lg shadow-lg p-4">
           <div className="flex gap-2">
             <input
