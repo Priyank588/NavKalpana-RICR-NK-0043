@@ -39,11 +39,7 @@ export const RegisterPage = () => {
         <div className="absolute bottom-1/3 right-20 text-6xl animate-float opacity-20" style={{animationDelay: '2s'}}>💪</div>
       </div>
       
-      {/* Gradient Orbs */}
-      <div className="absolute top-0 right-0 w-96 h-96 bg-green-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse"></div>
-      <div className="absolute bottom-0 left-0 w-96 h-96 bg-emerald-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" style={{animationDelay: '2s'}}></div>
-      
-      <div className="bg-white border border-gray-200 rounded-3xl shadow-2xl p-10 w-full max-w-md animate-scale-in relative z-10">
+      <div className="bg-white border border-gray-200 rounded-3xl p-10 w-full max-w-md animate-scale-in relative z-10 shadow-md">
         <div className="text-center mb-8">
           <div className="text-7xl mb-4 animate-bounce-subtle">🚀</div>
           <h1 className="text-5xl font-bold gradient-text mb-3">Join FitAI</h1>
@@ -144,9 +140,7 @@ export const RegisterPage = () => {
           </p>
         </div>
         
-        {/* Decorative Elements */}
-        <div className="absolute -top-4 -right-4 w-24 h-24 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full opacity-20 blur-2xl"></div>
-        <div className="absolute -bottom-4 -left-4 w-24 h-24 bg-gradient-to-br from-emerald-400 to-green-500 rounded-full opacity-20 blur-2xl"></div>
+        {/* removed decorative blurred elements for a flat card look */}
       </div>
     </div>
   );
